@@ -8,3 +8,6 @@ yolov8m.onnx
 .idea
 *.txt
 *.pyd
+*.png
+*.gif
+/pyarmor_runtime_000000

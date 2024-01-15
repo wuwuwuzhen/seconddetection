@@ -111,18 +111,18 @@ if __name__ == '__main__':
             t_plate_type = f"{plate}_{t_type}"
             alarm_time = pd.to_datetime(row['alarm_begin_time'])
             repet, repet_label = is_repet(plate_type, Time, t_plate_type, alarm_time)
-            if Second_det_distance[a] and (not repet):  # 二次检测通过且未重复
+            if (Second_det_distance[a]==1) and (not repet):  # 二次检测通过且未重复
                 plate_type.append(t_plate_type)
                 Time.append(alarm_time)
                 a += 1
                 continue
-            if Second_det_distance[a] and repet:  # 二次检测通过且重复
+            if (Second_det_distance[a]==1) and repet:  # 二次检测通过且重复
                 Merge_dis_distance[a] = repet_label
                 a += 1
                 continue
             a += 1
         for i in range(len(Second_det_distance)):
-            if Second_det_distance[i] != 1:
+            if Second_det_distance[i] not in [1,4]:
                 Second_det_distance[i] = 2
             if (not os.path.exists(Test_path[i])) and (not os.path.exists(Test_path_video[i])):  # 是视频和图像都没有则标注为3
                 Second_det_distance[i] = 3
@@ -174,18 +174,18 @@ if __name__ == '__main__':
             t_plate_type = f"{plate}_{t_type}"
             alarm_time = pd.to_datetime(row['alarm_begin_time'])
             repet, repet_label = is_repet(plate_type, Time, t_plate_type, alarm_time)
-            if Second_det_distracted[a] and (not repet):  # 二次检测通过且未重复
+            if (Second_det_distracted[a]==1) and (not repet):  # 二次检测通过且未重复
                 plate_type.append(t_plate_type)
                 Time.append(alarm_time)
                 a += 1
                 continue
-            if Second_det_distracted[a] and repet:  # 二次检测通过且重复
+            if (Second_det_distracted[a]==1) and repet:  # 二次检测通过且重复
                 Merge_dis_distracted[a] = repet_label
                 a += 1
                 continue
             a += 1
         for i in range(len(Second_det_distracted)):
-            if Second_det_distracted[i]!=1:
+            if Second_det_distracted[i] not in [1,4]:
                 Second_det_distracted[i]=2
             if (not os.path.exists(Test_path[i])) and (not os.path.exists(Test_path_video[i])):  # 是视频和图像都没有则标注为3
                 Second_det_distracted[i] = 3
@@ -204,7 +204,7 @@ if __name__ == '__main__':
         t2=time.time()
         # print(t2-t1)
 
-#行人碰撞检测
+# #行人碰撞检测
     # print(len(pedestrian_samples))
     Test_path = [];Test_path_video = []
     t1 = time.time()
@@ -236,18 +236,18 @@ if __name__ == '__main__':
             t_plate_type = f"{plate}_{t_type}"
             alarm_time = pd.to_datetime(row['alarm_begin_time'])
             repet, repet_label = is_repet(plate_type, Time, t_plate_type, alarm_time)
-            if Second_det_pedestrian[a] and (not repet):  # 二次检测通过且未重复
+            if (Second_det_pedestrian[a]==1 )and (not repet):  # 二次检测通过且未重复
                 plate_type.append(t_plate_type)
                 Time.append(alarm_time)
                 a += 1
                 continue
-            if Second_det_pedestrian[a] and repet:  # 二次检测通过且重复
+            if (Second_det_pedestrian[a]==1) and repet:  # 二次检测通过且重复
                 Merge_dis_pedestrian[a] = repet_label
                 a += 1
                 continue
             a += 1
         for i in range(len(Second_det_pedestrian)):
-            if Second_det_pedestrian[i] != 1:
+            if Second_det_pedestrian[i] not in [1,4]:
                 Second_det_pedestrian[i] = 2
             if (not os.path.exists(Test_path[i])) and (not os.path.exists(Test_path_video[i])):  # 是视频和图像都没有则标注为3
                 Second_det_pedestrian[i] = 3
@@ -297,21 +297,19 @@ if __name__ == '__main__':
             repet, repet_label = is_repet(plate_type, Time, t_plate_type, alarm_time)
             if ((Second_det_behavior[a]==1 or Second_det_behavior_video[a]==1)and t_type in [14,15]) or ((Second_det_behavior[a]==2 or Second_det_behavior_video[a]==2)and t_type==19) or ((Second_det_behavior[a]==3 or Second_det_behavior_video[a]==3) and t_type==18):
                 Second_det_behavior[a]=1
-            else:
-                Second_det_behavior[a] = 0
-            if Second_det_behavior[a] and (not repet):  # 二次检测通过且未重复
+            if (Second_det_behavior[a]==1 )and (not repet):  # 二次检测通过且未重复
                 plate_type.append(t_plate_type)
                 Time.append(alarm_time)
                 a += 1
                 continue
-            if Second_det_behavior[a] and repet:  # 二次检测通过且重复
+            if (Second_det_behavior[a]==1) and repet:  # 二次检测通过且重复
                 Merge_dis_behavior[a] = repet_label
                 a += 1
                 continue
             else:
                 a += 1
         for i in range(len(Second_det_behavior)):
-            if Second_det_behavior[i]!=1:
+            if Second_det_behavior[i] not in [1,4]:
                 Second_det_behavior[i]=2
             if (not os.path.exists(Test_path[i])) and (not os.path.exists(Test_path_video[i])):  # 是视频和图像都没有则标注为3
                 Second_det_behavior[i] = 3
@@ -353,7 +351,7 @@ if __name__ == '__main__':
         Second_det_lane_departure=lanelines.Lanelines.main(Test_path)
         Second_det_lane_departure_video=lanelines.video_Lanelines.main(Test_path_video)
         length = len(lane_departure_samples)
-        result = [1] * length
+        result = [4] * length
         picture_pos_path = home_path + "/lanelines/picture_position.txt"
         video_pos_path = home_path + "/lanelines/video_position.txt"
 
@@ -483,6 +481,6 @@ if __name__ == '__main__':
     t2 = time.time()
     # print(t2 - t1)
 
-    outpath = home_path+'/Output_1_11_cpu.xlsx'
+    outpath = home_path+'/Output_1_15_cpu.xlsx'
     df_combined = pd.concat([lane_departure_samples, distance_samples, behavior_samples, distracted_samples, pedestrian_samples,Other_samples], axis=0)
     df_combined.to_excel(outpath, index=False)

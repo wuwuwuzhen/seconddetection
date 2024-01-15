@@ -24,10 +24,10 @@ def pedestrian_collision(Test_path):
                 try:
                     Image.open(Test_path[i])
                 except (IOError, SyntaxError) as e:
-                    Flag[i] = 1
+                    Flag[i] = 4
                     continue
                 if not cap.isOpened():
-                    Flag[i] = 1
+                    Flag[i] = 4
                     continue
                 img=cv_imread(Test_path[i])
                 # Detect Objects
@@ -54,7 +54,7 @@ def pedestrian_collision(Test_path):
                     else:
                         Flag[i]=0
             else:
-                Flag[i] = 1
+                Flag[i] = 4
 
     if Test_path[0][-3:] == 'mp4':
         Flag = [0] * len(Test_path)

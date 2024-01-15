@@ -22,10 +22,10 @@ def Cdistract(Test_path):
                 try:
                     img = Image.open(Test_path[i])
                 except (IOError, SyntaxError) as e:
-                    Flag[i] = 1
+                    Flag[i] = 4
                     continue
                 if not cap.isOpened():
-                    Flag[i] = 1
+                    Flag[i] = 4
                     continue
                 c = 0
                 fps = cap.get(cv.CAP_PROP_FPS)  # 获取帧率
@@ -56,7 +56,7 @@ def Cdistract(Test_path):
                     else:
                         break
             else:
-                Flag[i] = 1
+                Flag[i] = 4
 
     if Test_path[0][-3:] == 'mp4':
         Flag = [0] * len(Test_path)

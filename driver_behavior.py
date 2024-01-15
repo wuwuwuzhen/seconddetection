@@ -22,12 +22,12 @@ def Behavior(Test_path):
                 try:
                     img = Image.open(Test_path[i])
                 except (IOError, SyntaxError) as e:
-                    Flag_1[i]=1
+                    Flag_1[i]=4
                     continue
                 cap = cv.VideoCapture(Test_path[i])
                 if not cap.isOpened():
                     #print("视频无法打开")
-                    Flag_1[i] = 1
+                    Flag_1[i] = 4
                     continue
                 c = 0
                 fps = cap.get(cv.CAP_PROP_FPS)  # 获取帧率
@@ -65,7 +65,7 @@ def Behavior(Test_path):
                     else:
                         break
             else:
-                Flag_1[i]=1
+                Flag_1[i]=4
 
         Flag_2 = [0]*len(Test_path)
         device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -82,12 +82,12 @@ def Behavior(Test_path):
                 try:
                     img = Image.open(Test_path[i])
                 except (IOError, SyntaxError) as e:
-                    Flag_2[i]=1
+                    Flag_2[i]=4
                     continue
                 cap = cv.VideoCapture(Test_path[i])
                 if not cap.isOpened():
                     # print("视频无法打开")
-                    Flag_2[i] = 1
+                    Flag_2[i] =4
                     continue
                 # print('WIDTH', cap.get(3))
                 # print('HEIGHT', cap.get(4))
@@ -127,7 +127,7 @@ def Behavior(Test_path):
                     else:
                         break
             else:
-                Flag_2[i] = 1
+                Flag_2[i] = 4
 
         Flag=[0]*len(Test_path)
         for i in range(len(Flag_1)):

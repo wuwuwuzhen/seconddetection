@@ -10,6 +10,8 @@ import cv2 as cv
 import os
 import pandas as pd
 import math
+import shutil
+import sys
 
 # globel param
 # dataset setting
@@ -23,11 +25,14 @@ data_loader_numworkers = 8
 class_num = 2
 
 # path
+#home_path="D:/college/研究生/驾驶行为检测/Demo_picture_video_12.25"
+
+home_path = os.path.abspath('../..')
 home_path = os.getcwd()
 resize_path=home_path+"/lanelines/video_resize"
 test_path = home_path+"/lanelines/video.txt"
 fps_path = home_path+"/lanelines/video_fps.txt"
-position_path = home_path+"/lanelines/video_position.txt"
+video_pos_path = home_path+"/lanelines/video_position.txt"
 save_path = home_path+"/lanelines/video_result/"
 result_path = home_path+"/lanelines/video_result_resize/"
 pretrained_path=home_path+'/lanelines/pretrained/unetlstm.pth'
@@ -47,52 +52,97 @@ def cv_imwrite(file_path,img):
     cv_img=cv.imencode('.jpg', img)[1].tofile(file_path)
     return cv_img
 
+def RemoveDir(filepath):
+    '''
+    如果文件夹不存在就创建，如果文件存在就清空！
+    '''
+    if not os.path.exists(filepath):
+        os.mkdir(filepath)
+    else:
+        shutil.rmtree(filepath)
+        os.mkdir(filepath)
+
+def Remove():
+    with open(test_path, 'a+', encoding='utf-8') as test1:
+        test1.truncate(0)
+    with open(fps_path, 'a+', encoding='utf-8') as test3:
+        test3.truncate(0)
+    with open(video_pos_path, 'a+', encoding='utf-8') as test4:
+        test4.truncate(0)
+    RemoveDir(resize_path)
+    RemoveDir(save_path)
+    RemoveDir(result_path)
+    RemoveDir(lane_path)
+
+
+def check_video(filepath):
+    try:
+        cap = cv.VideoCapture(filepath)
+        if not cap.isOpened():
+            print("无法打开视频文件")
+        else:
+            while True:
+                ret, frame = cap.read()
+                # 如果读取到最后一帧则结束循环
+                if not ret:
+                    break
+            cap.release()
+            print("视频正常")
+    except Exception as e:
+        print("发生错误:", str(e))
+
+# 调用函数进行视频检测
 
 ####批量处理256*128
 def resize(video_path):
     saveFile = resize_path
-    #print(len(picture_path))
     fpslist=[]
-    position=[]
+    video_position=[]
+    # print("图片视频数量",len(video_path))
     for i in range(len(video_path)):
         if (os.path.exists(video_path[i][0])):
+            #check_video(video_path[i][0])
             filepath = video_path[i][0]
             file = video_path[i][1]
             cap = cv.VideoCapture(filepath)
-            # if not cap.isOpened():
-            #     #print("视频无法打开")
-            #     exit()
-            c = 0
-            j = 0
-            fps = cap.get(cv.CAP_PROP_FPS)  # 获取帧率
-            size = (int(256), int(128))
-            while True:
-                # 捕获视频帧，返回ret，frame
-                # ret的true与false反应是否捕获成功，frame是画面
-                ret, frame = cap.read()
-                if not ret:
-                    #print("视频播放完毕")
-                    break
-                if ret:
-                    if (c % round(fps) == 0):  # 每隔fps帧进行操作
-                        file_path = saveFile + '/' + file.split('.')[0] + '_' + str(j) + '.jpg'
-                        shrink = cv.resize(frame, size, interpolation=cv.INTER_AREA)
-                        cv_imwrite(file_path, shrink)
-                        j = j + 1
-                        if j == 10:
-                            break
-                    cv.waitKey(1)  # waitKey()--这个函数是在一个给定的时间内(单位ms)等待用户按键触发;如果用户没有按下键,则接续等待(循环)
-                    c = c + 1
-                else:
-                    break
-            fpslist.append(j)
-            position.append(i)
+            if not cap.isOpened():
+                # print("损坏位置",i)
+                continue
+            else:
+                c = 0
+                j = 0
+                fps = cap.get(cv.CAP_PROP_FPS)  # 获取帧率
+                size = (int(256), int(128))
+                while True:
+                    # 捕获视频帧，返回ret，frame
+                    # ret的true与false反应是否捕获成功，frame是画面
+                    ret, frame = cap.read()
+                    if not ret:
+                        #print("视频播放完毕")
+                        break
+                    if ret:
+                        if (c % round(fps) == 0):  # 每隔fps帧进行操作
+                            file_path = saveFile + '/' + file.split('.')[0] + '_' + str(j) + '.jpg'
+                            shrink = cv.resize(frame, size, interpolation=cv.INTER_AREA)
+                            cv_imwrite(file_path, shrink)
+                            j = j + 1
+                            if j == 10:
+                                break
+                        cv.waitKey(1)  # waitKey()--这个函数是在一个给定的时间内(单位ms)等待用户按键触发;如果用户没有按下键,则接续等待(循环)
+                        c = c + 1
+                    else:
+                        break
+                fpslist.append(j)
+                video_position.append(i)
         else:
             continue
+    if len(video_position)==0:
+        # print("无视频")
+        return
     df = pd.DataFrame(fpslist)
     df.to_csv(fps_path, sep='\t', index=False, header=False)
-    df_p = pd.DataFrame(position)
-    df_p.to_csv(position_path, sep='\t', index=False, header=False)
+    df_p = pd.DataFrame(video_position)
+    df_p.to_csv(video_pos_path, sep='\t', index=False, header=False)
 ###写成深度学习格式
 def unetlstmtxt():
     os.chdir(resize_path)
@@ -220,9 +270,7 @@ def LaneLines(path,file):
     flagm = 0
     cap = cv.VideoCapture(path)
     # 检查是否导入视频成功
-    if not cap.isOpened():
-        print("视频无法打开")
-        exit()
+
     framenumber = 0
 
     while True:
@@ -352,12 +400,15 @@ def LaneLines(path,file):
     return flag
 
 def detection():
+    if not os.path.getsize(video_pos_path):
+        return
     sub_Flag=[]
     final_Flag=[]
     path_list = os.listdir(result_path)
     path_list.sort(key=lambda x: int(x.split('_')[0]))
     data = pd.read_csv(fps_path, sep='\t', header=None)
     data_name = pd.read_csv(test_path, sep='\t', header=None)
+
     i=0
     j=0
     m=0
@@ -372,15 +423,8 @@ def detection():
             i = i+1
             m = m+1
             if i==fps:
-                sub_Flag_5=sub_Flag[:5]
-                for i in set(sub_Flag_5):
-                    if sub_Flag_5.count(i) == max(sub_Flag_5, key=sub_Flag_5.count):
-                        for j in set(sub_Flag_5):
-                            if sub_Flag_5.count(i) == sub_Flag_5.count(j) and i != j:
-                                final_Flag.append(filename.split('_')[3])
-                    else:
-                        final_Flag.append(max(sub_Flag_5, key=sub_Flag_5.count))
-                        break
+                sub_Flag_5 = sub_Flag[:5]
+                final_Flag.append(max(sub_Flag_5, key=sub_Flag_5.count))
                 j=j+1
                 i=0
                 sub_Flag=[]

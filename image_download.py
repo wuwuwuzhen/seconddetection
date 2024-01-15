@@ -6,6 +6,7 @@ import pandas as pd
 import json
 from concurrent.futures import ThreadPoolExecutor
 
+
 def download_image(url, file_name, save_directory):
 
     proxy_support = request.ProxyHandler()
@@ -26,12 +27,14 @@ def download_image(url, file_name, save_directory):
             # print(f"Image downloaded and saved as {file_name}")
             return 0
         else:
-            print("Failed to download the image. Status code:", response.status_code)
+            print("Failed to download the image. Status code:",
+                  response.status_code)
             return -1
     except Exception as e:
         print(e)
         return -1
-    
+
+
 def download_image_wrapper(row):
     plate = row['plate'][1:]
     alarm_time = pd.to_datetime(row['alarm_begin_time'])
@@ -43,7 +46,7 @@ def download_image_wrapper(row):
 
     video_file_name = f"{plate}_{time_str}_{t_type}.mp4"
     pic_file_name = f"{plate}_{time_str}_{t_type}.jpg"
-    
+
     # 下载视频
     error_message = download_image(video_url, video_file_name, "./video")
     if error_message != 0:
@@ -57,6 +60,8 @@ def download_image_wrapper(row):
     else:
         print(f"Successfully downloaded {pic_file_name}")
 
+
 def image_thread_pool_executor(df):
-    with ThreadPoolExecutor(max_workers=50) as executor:
-        _ = [executor.submit(download_image_wrapper, row) for index, row in df.iterrows()]
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        _ = [executor.submit(download_image_wrapper, row)
+             for index, row in df.iterrows()]

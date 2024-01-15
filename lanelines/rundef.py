@@ -10,6 +10,7 @@ import cv2 as cv
 import os
 import pandas as pd
 import math
+import shutil
 
 # globel param
 # dataset setting
@@ -23,10 +24,11 @@ data_loader_numworkers = 8
 class_num = 2
 
 # path
-#home_path = os.path.abspath()
+home_path = os.path.abspath('../..')
 home_path = os.getcwd()
 resize_path=home_path+"/lanelines/resize"
 test_path = home_path+"/lanelines/picture.txt"
+picture_pos_path = home_path+"/lanelines/picture_position.txt"
 save_path = home_path+"/lanelines/result/"
 result_path = home_path+"/lanelines/result_resize/"
 pretrained_path=home_path+'/lanelines/pretrained/unetlstm.pth'
@@ -44,27 +46,55 @@ def cv_imwrite(file_path,img):
     cv_img=cv.imencode('.jpg', img)[1].tofile(file_path)
     return cv_img
 
+
+def RemoveDir(filepath):
+    '''
+    如果文件夹不存在就创建，如果文件存在就清空！
+    '''
+    if not os.path.exists(filepath):
+        os.mkdir(filepath)
+    else:
+        shutil.rmtree(filepath)
+        os.mkdir(filepath)
+
+def Remove():
+    with open(test_path, 'a+', encoding='utf-8') as test1:
+        test1.truncate(0)
+    with open(picture_pos_path, 'a+', encoding='utf-8') as test2:
+        test2.truncate(0)
+    RemoveDir(resize_path)
+    RemoveDir(save_path)
+    RemoveDir(result_path)
+    RemoveDir(lane_path)
+
 ####批量处理256*128
 def resize(picture_path):
+    Remove()
     saveFile = resize_path
-    #print(len(picture_path))
+    picture_pos=[]
+    # print("图片视频数量", len(picture_path))
     for i in range(len(picture_path)):
-        if (os.path.exists(picture_path[i][0]) and picture_path[i][1][-3:0]=='jpg'):
+        if (os.path.exists(picture_path[i][0])):
             filepath=picture_path[i][0]
             file = picture_path[i][1]
-
             size = (int(256), int(128))
             image1 = cv_imread(filepath)
+            try:
+                Image.open(filepath)
+            except:
+                # print('损坏位置',i)
+                continue
             file_path = saveFile+'/'+str(i)+'_'+ file
-
+            picture_pos.append(i)
             shrink = cv.resize(image1, size, interpolation=cv.INTER_AREA)
-            #print(file_path, i)
             cv_imwrite(file_path, shrink)
-            i=i+1
         else:
-
-            i = i + 1
             continue
+    if len(picture_pos)==0:
+        # print("无图片")
+        return
+    df_p_no = pd.DataFrame(picture_pos)
+    df_p_no.to_csv(picture_pos_path, sep='\t', index=False, header=False)
 ###写成深度学习格式
 def unetlstmtxt():
     os.chdir(resize_path)
@@ -188,9 +218,6 @@ def LaneLines(path,file):
     flagm = 0
     cap = cv.VideoCapture(path)
     # 检查是否导入视频成功
-    if not cap.isOpened():
-        print("视频无法打开")
-        exit()
     framenumber = 0
 
     while True:
@@ -320,6 +347,8 @@ def LaneLines(path,file):
     return flag
 
 def detection():
+    if not os.path.getsize(picture_pos_path):
+        return
     Flag=[]
     path_list = os.listdir(result_path)
     path_list.sort(key=lambda x: int(x.split('_')[0]))
