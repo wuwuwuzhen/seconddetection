@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 import pandas as pd
 from flask_cors import CORS  # 防止CORS错误
 import os
-from sample_selection_v4 import sample_selection
+from detection import sample_selection
 from image_download import image_thread_pool_executor
 from pack_req import pack_req
 import requests
