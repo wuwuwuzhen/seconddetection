@@ -1,0 +1,10 @@
+*.jpg
+*.mp4
+*.pyc
+*.pt
+*.xlsx
+*.pth
+yolov8m.onnx
+.idea
+*.txt
+*.pyd
