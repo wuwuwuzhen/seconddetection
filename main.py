@@ -3,7 +3,7 @@ import pandas as pd
 from flask_cors import CORS  # 防止CORS错误
 import os
 from detection import sample_selection
-from image_download import image_thread_pool_executor
+from image_download import image_thread_pool_executor, download_image_from_req
 from pack_req import pack_req
 import requests
 import logging
@@ -22,8 +22,10 @@ logging.basicConfig(filename='log.log', level=logging.INFO,
 def seconddetection():
     logging.info(f'Request received: {request.json}')
     try:
+        # 下载资源
+        download_image_from_req(request.json)
+        # 处理数据
         df = pd.DataFrame(request.json)
-        image_thread_pool_executor(df)
         df_combined = sample_selection(df)
         json_payload = pack_req(df_combined)
         logging.info(f'{json_payload}')
