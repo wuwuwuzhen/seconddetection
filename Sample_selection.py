@@ -23,7 +23,7 @@ def is_repet (plate_type, Time, t_plate_type, alarm_time):
 
 if __name__ == '__main__':
     home_path = os.getcwd()
-    path = home_path+'/Input.xlsx'
+    path = home_path+'/Input_1_16.xlsx'
     df = pd.read_excel(path)
     exception_type = df['exception_type'].tolist()
     lane_departure = [];
@@ -295,8 +295,14 @@ if __name__ == '__main__':
             t_plate_type = f"{plate}_{t_type}"
             alarm_time = pd.to_datetime(row['alarm_begin_time'])
             repet, repet_label = is_repet(plate_type, Time, t_plate_type, alarm_time)
-            if ((Second_det_behavior[a]==1 or Second_det_behavior_video[a]==1)and t_type in [14,15]) or ((Second_det_behavior[a]==2 or Second_det_behavior_video[a]==2)and t_type==19) or ((Second_det_behavior[a]==3 or Second_det_behavior_video[a]==3) and t_type==18):
+            if (((Second_det_behavior[a]==1 or Second_det_behavior_video[a]==1)and t_type in [14,15])
+                    or ((Second_det_behavior[a]==2 or Second_det_behavior_video[a]==2)and t_type==19)
+                    or ((Second_det_behavior[a]==3 or Second_det_behavior_video[a]==3) and t_type==18)):
                 Second_det_behavior[a]=1
+            elif Second_det_behavior[a]==4:
+                Second_det_behavior[a] = 4
+            else:
+                Second_det_behavior[a] = 2
             if (Second_det_behavior[a]==1 )and (not repet):  # 二次检测通过且未重复
                 plate_type.append(t_plate_type)
                 Time.append(alarm_time)
@@ -309,8 +315,8 @@ if __name__ == '__main__':
             else:
                 a += 1
         for i in range(len(Second_det_behavior)):
-            if Second_det_behavior[i] not in [1,4]:
-                Second_det_behavior[i]=2
+            # if Second_det_behavior[i] not in [1,4]:
+            #     Second_det_behavior[i]=2
             if (not os.path.exists(Test_path[i])) and (not os.path.exists(Test_path_video[i])):  # 是视频和图像都没有则标注为3
                 Second_det_behavior[i] = 3
         a = 0
@@ -440,7 +446,7 @@ if __name__ == '__main__':
         lane_departure_samples['mergeUUId'] = Merge_dis_lane_departure
         t2 = time.time()
         # print(t2 - t1)
-#
+
     # 合并Others的重复项
     # print(len(Other_samples))
     t1 = time.time()
@@ -481,6 +487,6 @@ if __name__ == '__main__':
     t2 = time.time()
     # print(t2 - t1)
 
-    outpath = home_path+'/Output_1_15_cpu.xlsx'
+    outpath = home_path+'/Output_1_16_cpu.xlsx'
     df_combined = pd.concat([lane_departure_samples, distance_samples, behavior_samples, distracted_samples, pedestrian_samples,Other_samples], axis=0)
     df_combined.to_excel(outpath, index=False)

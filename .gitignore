@@ -11,3 +11,4 @@ yolov8m.onnx
 *.png
 *.gif
 /pyarmor_runtime_000000
+*.log
