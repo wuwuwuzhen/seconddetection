@@ -488,7 +488,7 @@ def sample_selection(df):
     t2 = time.time()
     # print(t2 - t1)
 
-    # outpath = home_path+'/Output_1_16_cpu.xlsx'
+    outpath = home_path+'/result.xlsx'
     df_combined = pd.concat([lane_departure_samples, distance_samples, behavior_samples, distracted_samples, pedestrian_samples,Other_samples], axis=0)
-    # df_combined.to_excel(outpath, index=False)
+    df_combined.to_excel(outpath, index=False)
     return df_combined

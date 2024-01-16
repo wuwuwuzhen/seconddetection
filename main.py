@@ -37,8 +37,11 @@ logging.basicConfig(filename='log.log', level=logging.INFO, format='%(asctime)s:
 
 @app.route('/seconddetection/', methods=['POST'])
 def seconddetection():
+    logging.info(f'Request received: {request.json}')
     try:
         df = pd.DataFrame(request.json)
+        # df.to_csv('test.csv')
+        # df.to_excel('test.xlsx')
         image_thread_pool_executor(df) 
         df_combined = sample_selection(df)
         json_payload = pack_req(df_combined)   

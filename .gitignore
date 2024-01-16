@@ -12,3 +12,7 @@ yolov8m.onnx
 *.gif
 /pyarmor_runtime_000000
 *.log
+test.json
+.vscode
+.ipynb
+test.csv
