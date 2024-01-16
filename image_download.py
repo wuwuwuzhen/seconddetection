@@ -45,8 +45,6 @@ def download_image_wrapper(req):
     picture_urls = transfer_url_list(req["picture_url"])
     if picture_urls is None:
         print("No picture url")
-        # 引发错误
-        raise Exception("No picture url")
     else:
         for picture_url in picture_urls:
             pic_file_name = f"{plate}_{time_str}_{t_type}.jpg"
