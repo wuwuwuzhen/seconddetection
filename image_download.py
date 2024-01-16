@@ -76,7 +76,7 @@ def transfer_url_list(urls) -> list:
     if type(urls) == list:
         return urls
     if type(urls) == str:
-        urls = json.loads(urls)
+        return json.loads(urls)
     return None
 
 
