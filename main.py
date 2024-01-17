@@ -24,9 +24,12 @@ def seconddetection():
     try:
         # 下载资源
         download_image_from_req(request.json)
+        logging.info('Succeed in downloading images and videos')
         # 处理数据
         df = pd.DataFrame(request.json)
+        logging.info('Succeed in converting json to dataframe')
         df_combined = sample_selection(df)
+        logging.info('Succeed in selecting samples')
         json_payload = pack_req(df_combined)
         logging.info(f'{json_payload}')
         response = requests.post(url, json=json_payload)
