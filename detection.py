@@ -10,6 +10,7 @@ import lanelines.video_Lanelines
 import torch
 import time
 from fv_detection import vehicle_collision
+import logging
 
 def is_repet (plate_type, Time, t_plate_type, alarm_time):
     t1 = pd.Timestamp(alarm_time)
@@ -24,6 +25,7 @@ def is_repet (plate_type, Time, t_plate_type, alarm_time):
 # if __name__ == '__main__':
 def sample_selection(df):
     home_path = os.getcwd()
+    logging.info(f"home_path: {home_path}")
     # path = home_path+'/Input_1_16.xlsx'
     # df = pd.read_excel(path)
     exception_type = df['exception_type'].tolist()
@@ -50,6 +52,7 @@ def sample_selection(df):
             pedestrian.append(i)
         else:
             Other.append(i)
+    logging.info(f"other: {Other}")
 
     # 将样本按类别规整便于调用模型
     lane_departure_samples = df.iloc[lane_departure].copy()  # 复制到新的Dataframe

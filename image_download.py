@@ -5,7 +5,7 @@ import os
 import pandas as pd
 import json
 from concurrent.futures import ThreadPoolExecutor
-
+import logging
 
 def download_file(url, file_name, save_directory):
 
@@ -24,14 +24,13 @@ def download_file(url, file_name, save_directory):
             save_path = os.path.join(save_directory, file_name)
             with open(save_path, "wb") as file:
                 file.write(response.read())
-            # print(f"Image downloaded and saved as {file_name}")
             return 0
         else:
-            print("Failed to download the image. Status code:",
+            logging.error("download_file|Failed to download the image. Status code:",
                   response.status_code)
             return -1
     except Exception as e:
-        print(e)
+        logging.error("download_file|Exception:", e)
         return -1
 
 
@@ -42,9 +41,9 @@ def download_image_wrapper(req):
     t_type = req['exception_type']
 
     # 下载图片
-    picture_urls = transfer_url_list(req["picture_url"])
+    picture_urls = transfer_url_list(req.get("picture_url", None))
     if picture_urls is None:
-        print("No picture url")
+        logging.info("download_image_wrapper|No picture url")
     else:
         for picture_url in picture_urls:
             pic_file_name = f"{plate}_{time_str}_{t_type}.jpg"
@@ -56,10 +55,8 @@ def download_image_wrapper(req):
                 print(f"Successfully downloaded {pic_file_name}")
 
     # 下载视频
-    video_urls = transfer_url_list(req["video_url"])
-    if video_urls is None:
-        print("No video url")
-    else:
+    video_urls = transfer_url_list(req.get("video_url", None))
+    if video_urls is not None:
         for video_url in video_urls:
             video_file_name = f"{plate}_{time_str}_{t_type}.mp4"
             error_message = download_file(
