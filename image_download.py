@@ -51,8 +51,6 @@ def download_image_wrapper(req):
                 picture_url, pic_file_name, "./picture")
             if error_message != 0:
                 print(f"Failed to download picture from {picture_url}")
-            else:
-                print(f"Successfully downloaded {pic_file_name}")
 
     # 下载视频
     video_urls = transfer_url_list(req.get("video_url", None))
@@ -63,8 +61,6 @@ def download_image_wrapper(req):
                 video_url, video_file_name, "./video")
             if error_message != 0:
                 print(f"Failed to download video from {video_url}")
-            else:
-                print(f"Successfully downloaded {video_file_name}")
 
 
 def transfer_url_list(urls) -> list:
