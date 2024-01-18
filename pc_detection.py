@@ -42,7 +42,7 @@ def pedestrian_collision(Test_path):
                     Area.append(area)
                 # Draw detections
                 if len(Area) == 0:
-                    Flag[i] = 0
+                    Flag[i] = 2
                     continue
                 else:
                     max_value = max(Area) # 求列表最大值
@@ -52,7 +52,7 @@ def pedestrian_collision(Test_path):
                     if max_value/picture_area>0.15:#(碰撞)
                         Flag[i]=1
                     else:
-                        Flag[i]=0
+                        Flag[i]=2
             else:
                 Flag[i] = 4
 
@@ -103,6 +103,7 @@ def pedestrian_collision(Test_path):
                 image_dir.append(0)
         for i in range(len(image_dir)):
             if image_dir[i] == 0:
+                Flag[i] = 4
                 continue
             else:
                 for file in os.listdir('yolo_picture/'):
@@ -121,7 +122,7 @@ def pedestrian_collision(Test_path):
                             Area.append(area)
                         # Draw detections
                         if len(Area) == 0:
-                            Flag[i] = 0
+                            Flag[i] = 2
                             continue
                         else:
                             max_value = max(Area)  # 求列表最大值
@@ -130,7 +131,8 @@ def pedestrian_collision(Test_path):
                             # print(max_value,picture_area,(max_value/picture_area)*100,'%')
                             if max_value / picture_area > 0.15:  # (碰撞)
                                 Flag[i] = 1
-                                break
+                if Flag[i] != 1:
+                    Flag[i] =2
         dir_path='yolo_picture/'
         for filename in os.listdir(dir_path):
             # 构造文件的完整路径

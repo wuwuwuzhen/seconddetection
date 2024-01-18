@@ -52,7 +52,7 @@ def Cdistract(Test_path):
                             if (index in [0,1]) or (index_2 in [0,1]):
                                 Flag[i]=1
                             else:
-                                Flag[i]=0
+                                Flag[i]=2
                     else:
                         break
             else:
@@ -113,6 +113,7 @@ def Cdistract(Test_path):
                 image_dir.append(0)
         for i in range(len(image_dir)):
             if image_dir[i] == 0:
+                Flag[i] = 4
                 continue
             else:
                 for j in range(len(image_dir[i])):
@@ -128,5 +129,6 @@ def Cdistract(Test_path):
                     index_2 = a.index(re_a[1])  # 认定Top2
                     if (index in [0, 1]) or (index_2 in [0, 1]):
                         Flag[i] = 1
-                        break
+                if Flag[i] != 1:
+                    Flag[i]=2
     return Flag

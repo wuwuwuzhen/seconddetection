@@ -95,6 +95,7 @@ def check_video(filepath):
 
 ####批量处理256*128
 def resize(video_path):
+    Remove()
     saveFile = resize_path
     fpslist=[]
     video_position=[]
@@ -113,6 +114,7 @@ def resize(video_path):
                 j = 0
                 fps = cap.get(cv.CAP_PROP_FPS)  # 获取帧率
                 size = (int(256), int(128))
+
                 while True:
                     # 捕获视频帧，返回ret，frame
                     # ret的true与false反应是否捕获成功，frame是画面
@@ -236,6 +238,8 @@ def get_parameters(model, layer_name):
 
 ###检测后的图片改名
 def rename():
+    if not os.path.getsize(test_path):
+        return
     saveFile = result_path
     pathin = save_path
     filelist = os.listdir(pathin)  # 获取文件路径
@@ -381,7 +385,7 @@ def LaneLines(path,file):
             elif xm <  0.5*width+3 and xm >  0.5*width-3:
                 cv.putText(frame, "middle", (80, 200), cv.FONT_HERSHEY_PLAIN, 4, (0, 0, 255), 5)
                 flagm = 1
-                flag = 4
+                flag = 5
             else:
                 if(slopel<sloper):
                     cv.putText(frame, "right", (450, 200), cv.FONT_HERSHEY_PLAIN, 4, (0, 0, 255), 5)
@@ -391,8 +395,6 @@ def LaneLines(path,file):
                     cv.putText(frame, "left", (80, 200), cv.FONT_HERSHEY_PLAIN, 4, (0, 0, 255), 5)
                     flagl = 1
                     flag = 2
-        if (flagr+flagl==2):
-            flag=3
         framenumber += 1
         cv_imwrite(lane_path+file, frame)
     cap.release()

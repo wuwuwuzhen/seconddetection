@@ -24,6 +24,7 @@ data_loader_numworkers = 8
 class_num = 2
 
 # path
+#home_path = "D:/college/研究生/驾驶行为检测/Demo_picture_video_12.25"
 home_path = os.path.abspath('../..')
 home_path = os.getcwd()
 resize_path=home_path+"/lanelines/resize"
@@ -33,6 +34,7 @@ save_path = home_path+"/lanelines/result/"
 result_path = home_path+"/lanelines/result_resize/"
 pretrained_path=home_path+'/lanelines/pretrained/unetlstm.pth'
 lane_path = home_path+"/lanelines/result_lane/"
+
 
 # weight
 class_weight = [0.02, 1.02]
@@ -185,6 +187,8 @@ def get_parameters(model, layer_name):
 
 ###检测后的图片改名
 def rename():
+    if not os.path.getsize(test_path):
+        return
     saveFile = result_path
     pathin = save_path
     filelist = os.listdir(pathin)  # 获取文件路径
@@ -328,7 +332,7 @@ def LaneLines(path,file):
             elif xm <  0.5*width+3 and xm >  0.5*width-3:
                 cv.putText(frame, "middle", (80, 200), cv.FONT_HERSHEY_PLAIN, 4, (0, 0, 255), 5)
                 flagm = 1
-                flag = 4
+                flag = 5
             else:
                 if(slopel<sloper):
                     cv.putText(frame, "right", (450, 200), cv.FONT_HERSHEY_PLAIN, 4, (0, 0, 255), 5)
@@ -338,8 +342,7 @@ def LaneLines(path,file):
                     cv.putText(frame, "left", (80, 200), cv.FONT_HERSHEY_PLAIN, 4, (0, 0, 255), 5)
                     flagl = 1
                     flag = 2
-        if (flagr+flagl==2):
-            flag=3
+
         framenumber += 1
         cv_imwrite(lane_path+file, frame)
     cap.release()
@@ -364,4 +367,5 @@ def detection():
                 flag = LaneLines(file_path,file)
                 Flag.append(flag)
     return Flag
+
 
