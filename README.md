@@ -3,6 +3,7 @@
 docker exec -it 69 /bin/zsh
 cd data/code/hf_bus
 pkill -f python
+kill -9 $(pgrep gunicorn)
 nohup gunicorn --workers 24 --timeout 3600 --bind 0.0.0.0:5000 main:app --log-level debug --access-logfile - --error-logfile - &
 ```
 
