@@ -1,6 +1,7 @@
 # docker
 ```shell
 docker exec -it 69 /bin/zsh
+ps -ef | grep python
 cd data/code/hf_bus
 pkill -f python
 kill -9 $(pgrep gunicorn)

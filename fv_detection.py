@@ -14,7 +14,7 @@ def cv_imwrite(file_path,img):
     return cv_img
 def vehicle_collision(Test_path):
     #Initialize yolov8 object detector
-    model_path = "models/yolov8m.onnx"
+    model_path = "./yolov8m.onnx"
     yolov8_detector = YOLOv8(model_path, conf_thres=0.2, iou_thres=0.3)
     if Test_path[0][-3:] == 'jpg':
         Flag=[0]*len(Test_path)
@@ -78,25 +78,13 @@ def vehicle_collision(Test_path):
                     image_dir.append(0)
                     continue
                 video = cv.VideoCapture(Test_path[i])
-                # 获取视频的帧率
-                fps = video.get(cv.CAP_PROP_FPS)
-                # 计算每秒的中间帧索引
-                mid_frame_index = fps // 2
-                frame_count = 0  # 帧计数器
-                frames = []  # 用于保存帧的列表
-                while True:
-                    # 读取视频帧
+                total_frames = int(video.get(cv.CAP_PROP_FRAME_COUNT))
+                frames_interval = total_frames // 10
+                for j in range(0, total_frames, frames_interval):
+                    video.set(cv.CAP_PROP_POS_FRAMES, j)
                     ret, frame = video.read()
-                    # 如果视频帧读取失败，退出循环
-                    if not ret:
-                        break
-                    # 检查当前帧是否是每秒的第一帧或中间帧
-                    if frame_count % fps == 0 or frame_count % fps == mid_frame_index:
-                        # 将帧添加到列表中
-                        cv_imwrite('yolo_picture/'+str(i)+'_'+str(frame_count)+'.jpg', frame)#从视频提取jpg
-                        # frames.append(Image.fromarray(cv.cvtColor(frame, cv.COLOR_BGR2RGB)))
-                    frame_count += 1
-                # 释放视频对象和关闭窗口
+                    if ret:
+                        cv_imwrite('yolo_picture/'+str(i)+'_'+str(j)+'.jpg', frame)#从视频提取jpg
                 video.release()
                 cv.destroyAllWindows()
                 image_dir.append(1)
@@ -135,7 +123,7 @@ def vehicle_collision(Test_path):
                                 Flag[i] = 1
                 if Flag[i] != 1:
                     Flag[i] =2
-        dir_path='yolo_picture/'
+        dir_path='./yolo_picture/'
         for filename in os.listdir(dir_path):
             # 构造文件的完整路径
             file_path = os.path.join(dir_path, filename)

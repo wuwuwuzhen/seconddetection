@@ -24,131 +24,141 @@ def is_repet (plate_type, Time, t_plate_type, alarm_time):
 
 # if __name__ == '__main__':
 def sample_selection(df):
-    home_path = os.getcwd()
-    # path = home_path+'/Input.xlsx'
-    # path = home_path + "/Input.xlsx"
-    # df = pd.read_excel(path)
-    exception_type = df['exception_type'].tolist()
-    lane_departure = [];
-    behavior = [];
-    distance = [];
-    distracted = [];
-    pedestrian=[]
-    Other = []  # fatigue 包括疲劳、吸烟、接打电话
-    for i in range(len(exception_type)):
-        if int(exception_type[i]) in [3, 4, 5, 6]:
-            lane_departure.append(i)
-            continue
-        if int(exception_type[i]) in [14, 15, 18, 19]:
-            behavior.append(i)
-            continue
-        if int(exception_type[i]) in [1, 2, 7, 8]:
-            distance.append(i)
-            continue
-        if int(exception_type[i]) in [16, 17]:
-            distracted.append(i)
-            continue
-        if int(exception_type[i]) in [9, 10]:
-            pedestrian.append(i)
-        else:
-            Other.append(i)
-    # 将样本按类别规整便于调用模型
-    lane_departure_samples = df.iloc[lane_departure].copy()  # 复制到新的Dataframe
-    distance_samples = df.iloc[distance].copy()
-    behavior_samples = df.iloc[behavior].copy()
-    distracted_samples = df.iloc[distracted].copy()
-    pedestrian_samples = df.iloc[pedestrian].copy()
-    Other_samples = df.iloc[Other].copy()
+    pid = os.getpid() 
+    try:
+        home_path = os.getcwd()
+        # path = home_path+'/Input.xlsx'
+        # path = home_path + "/Input.xlsx"
+        # df = pd.read_excel(path)
+        exception_type = df['exception_type'].tolist()
+        lane_departure = [];
+        behavior = [];
+        distance = [];
+        distracted = [];
+        pedestrian=[]
+        Other = []  # fatigue 包括疲劳、吸烟、接打电话
+        for i in range(len(exception_type)):
+            if int(exception_type[i]) in [3, 4, 5, 6]:
+                lane_departure.append(i)
+                continue
+            if int(exception_type[i]) in [14, 15, 18, 19]:
+                behavior.append(i)
+                continue
+            if int(exception_type[i]) in [1, 2, 7, 8]:
+                distance.append(i)
+                continue
+            if int(exception_type[i]) in [16, 17]:
+                distracted.append(i)
+                continue
+            if int(exception_type[i]) in [9, 10]:
+                pedestrian.append(i)
+            else:
+                Other.append(i)
+        # 将样本按类别规整便于调用模型
+        lane_departure_samples = df.iloc[lane_departure].copy()  # 复制到新的Dataframe
+        distance_samples = df.iloc[distance].copy()
+        behavior_samples = df.iloc[behavior].copy()
+        distracted_samples = df.iloc[distracted].copy()
+        pedestrian_samples = df.iloc[pedestrian].copy()
+        Other_samples = df.iloc[Other].copy()
 
-    Second_det_distracted = [0] * len(distracted_samples);
-    Merge_dis_distracted = [''] * len(distracted_samples)
-    Second_det_lane_departure = [0] * len(lane_departure_samples);
-    Merge_dis_lane_departure = [''] * len(lane_departure_samples)
-    Second_det_distance = [0] * len(distance_samples);
-    Merge_dis_distance = [''] * len(distance_samples)
-    Second_det_behavior = [0] * len(behavior_samples);
-    Merge_dis_behavior = [''] * len(behavior_samples)
-    Second_det_pedestrian = [0] * len(pedestrian_samples);
-    Merge_dis_pedestrian = [''] * len(pedestrian_samples)
-    Second_det_Other = [4] * len(Other_samples);
-    Merge_dis_Other = [''] * len(Other_samples)  # 无法判定的其他类别设置为1 仅筛除复报告情况
+        Second_det_distracted = [0] * len(distracted_samples);
+        Merge_dis_distracted = [''] * len(distracted_samples)
+        Second_det_lane_departure = [0] * len(lane_departure_samples);
+        Merge_dis_lane_departure = [''] * len(lane_departure_samples)
+        Second_det_distance = [0] * len(distance_samples);
+        Merge_dis_distance = [''] * len(distance_samples)
+        Second_det_behavior = [0] * len(behavior_samples);
+        Merge_dis_behavior = [''] * len(behavior_samples)
+        Second_det_pedestrian = [0] * len(pedestrian_samples);
+        Merge_dis_pedestrian = [''] * len(pedestrian_samples)
+        Second_det_Other = [4] * len(Other_samples);
+        Merge_dis_Other = [''] * len(Other_samples)  # 无法判定的其他类别设置为1 仅筛除复报告情况
 
-    picture_path = home_path + '/picture/'
-    video_path=home_path+'/video/'
-    video_det_distracted=[0]*len(distracted_samples);
-    video_det_lane_departure=[0]*len(lane_departure_samples);
-    video_det_distance=[0]*len(distance_samples);
-    video_det_behavior=[0]*len(behavior_samples);
-    video_det_pedestrian = [0] * len(pedestrian_samples);
+        picture_path = home_path + '/picture/'
+        video_path=home_path+'/video/'
+        video_det_distracted=[0]*len(distracted_samples);
+        video_det_lane_departure=[0]*len(lane_departure_samples);
+        video_det_distance=[0]*len(distance_samples);
+        video_det_behavior=[0]*len(behavior_samples);
+        video_det_pedestrian = [0] * len(pedestrian_samples);
+        logging.info(f'PID {pid}|Succeed in classifying')
+    except Exception as e:
+        logging.error(f'PID {pid}|An error occurred: Failed to classify')
+
 
 # 跟车距离检测
-    t1 = time.time()
-    # print(len(distance_samples))
-    #logging.info(f"len(distance_samples): {len(distance_samples)}")
-    Test_path = [];Test_path_video = []
-    if len(distance_samples) > 0:
-        for index, row in distance_samples.iterrows():
-            plate = row['plate'][1:]
-            t_type = row['exception_type']
-            t_plate_type = f"{plate}_{t_type}"
-            alarm_time = pd.to_datetime(row['alarm_begin_time'])
-            time_str = alarm_time.strftime('%Y%m%d_%H%M%S')
-            file_name = f"{plate}_{time_str}_{t_type}.jpg"
-            test_path = picture_path + file_name
-            Test_path.append(test_path)
-            file_name_video = f"{plate}_{time_str}_{t_type}.mp4"
-            test_path_video = video_path + file_name_video
-            Test_path_video.append(test_path_video)
-        Second_det_distance = vehicle_collision(Test_path)  # CLIP判定
-        Second_det_distance_video = vehicle_collision(Test_path_video)  # CLIP判定
-        # 视频检测
-        for i in range(len(Second_det_distance)):
-            if Second_det_distance_video[i] == 1 or Second_det_distance[i]==1:
-                Second_det_distance[i] = 1
-            elif Second_det_distance_video[i] == 4 and Second_det_distance[i]==2:
-                Second_det_distance[i] = 2
-            elif Second_det_distance_video[i] == 2 and Second_det_distance[i]==4:
-                Second_det_distance[i] = 2
-            elif Second_det_distance_video[i] == 4 and Second_det_distance[i]==4:
-                Second_det_distance[i] = 3
-        a = 0
-        plate_type = [];
-        Time = []  # 记录事件的车牌号、类型、时间
-        for index, row in distance_samples.iterrows():
-            plate = row['plate'][1:]
-            t_type = row['exception_type']
-            t_plate_type = f"{plate}_{t_type}"
-            alarm_time = pd.to_datetime(row['alarm_begin_time'])
-            repet, repet_label = is_repet(plate_type, Time, t_plate_type, alarm_time)
-            if (Second_det_distance[a]==1) and (not repet):  # 二次检测通过且未重复
-                plate_type.append(t_plate_type)
-                Time.append(alarm_time)
+    try:
+        t1 = time.time()
+        logging.info(f"PID {pid}|len(distance_samples): {len(distance_samples)}")
+        Test_path = [];Test_path_video = []
+        if len(distance_samples) > 0:
+            for index, row in distance_samples.iterrows():
+                plate = row['plate'][1:]
+                t_type = row['exception_type']
+                t_plate_type = f"{plate}_{t_type}"
+                alarm_time = pd.to_datetime(row['alarm_begin_time'])
+                time_str = alarm_time.strftime('%Y%m%d_%H%M%S')
+                file_name = f"{plate}_{time_str}_{t_type}.jpg"
+                test_path = picture_path + file_name
+                Test_path.append(test_path)
+                file_name_video = f"{plate}_{time_str}_{t_type}.mp4"
+                test_path_video = video_path + file_name_video
+                Test_path_video.append(test_path_video)
+            Second_det_distance = vehicle_collision(Test_path)  # CLIP判定
+            Second_det_distance_video = vehicle_collision(Test_path_video)  # CLIP判定
+            # 视频检测
+            for i in range(len(Second_det_distance)):
+                if Second_det_distance_video[i] == 1 or Second_det_distance[i]==1:
+                    Second_det_distance[i] = 1
+                elif Second_det_distance_video[i] == 4 and Second_det_distance[i]==2:
+                    Second_det_distance[i] = 2
+                elif Second_det_distance_video[i] == 2 and Second_det_distance[i]==4:
+                    Second_det_distance[i] = 2
+                elif Second_det_distance_video[i] == 4 and Second_det_distance[i]==4:
+                    Second_det_distance[i] = 3
+            a = 0
+            plate_type = [];
+            Time = []  # 记录事件的车牌号、类型、时间
+            for index, row in distance_samples.iterrows():
+                plate = row['plate'][1:]
+                t_type = row['exception_type']
+                t_plate_type = f"{plate}_{t_type}"
+                alarm_time = pd.to_datetime(row['alarm_begin_time'])
+                repet, repet_label = is_repet(plate_type, Time, t_plate_type, alarm_time)
+                if (Second_det_distance[a]==1) and (not repet):  # 二次检测通过且未重复
+                    plate_type.append(t_plate_type)
+                    Time.append(alarm_time)
+                    a += 1
+                    continue
+                if (Second_det_distance[a]==1) and repet:  # 二次检测通过且重复
+                    Merge_dis_distance[a] = repet_label
+                    logging.info(f"PID {pid}|index {index}|Merge_dis_distance: {Merge_dis_distance[a]}")
+                    a += 1
+                    continue
                 a += 1
-                continue
-            if (Second_det_distance[a]==1) and repet:  # 二次检测通过且重复
-                Merge_dis_distance[a] = repet_label
-                logging.info(f"Merge_dis_distance: {Merge_dis_distance[a]}")
+            a = 0
+            for index, row in distance_samples.iterrows():
+                plate = row['plate'][1:]
+                t_type = row['exception_type']
+                t_plate_type = f"{plate}_{t_type}"
+                alarm_time = pd.to_datetime(row['alarm_begin_time'])
+                time_str = alarm_time.strftime('%Y%m%d_%H%M%S')
+                if (t_plate_type + '_' + time_str) in Merge_dis_distance:
+                    Merge_dis_distance[a] = t_plate_type + '_' + time_str
                 a += 1
-                continue
-            a += 1
-        a = 0
-        for index, row in distance_samples.iterrows():
-            plate = row['plate'][1:]
-            t_type = row['exception_type']
-            t_plate_type = f"{plate}_{t_type}"
-            alarm_time = pd.to_datetime(row['alarm_begin_time'])
-            time_str = alarm_time.strftime('%Y%m%d_%H%M%S')
-            if (t_plate_type + '_' + time_str) in Merge_dis_distance:
-                Merge_dis_distance[a] = t_plate_type + '_' + time_str
-            a += 1
-        distance_samples['checkStatus'] = Second_det_distance
-        distance_samples['mergeUUId'] = Merge_dis_distance
-        logging.info(f"Second_det_distance: {Second_det_distance}")
-        logging.info(f"Merge_dis_distance: {Merge_dis_distance}")
-        t2 = time.time()
-        # print(t2-t1)
+            distance_samples['checkStatus'] = Second_det_distance
+            distance_samples['mergeUUId'] = Merge_dis_distance
+            logging.info(f"PID {pid}|index {index}|Second_det_distance: {Second_det_distance}")
+            logging.info(f"PID {pid}|index {index}|Merge_dis_distance: {Merge_dis_distance}")
+            t2 = time.time()
+            # print(t2-t1)
+        logging.info(f'PID {pid}|Succeed in distance detection')
+    except Exception as e:
+        logging.error(f'PID {pid}|An error occurred: Distance detection failed')
 #
 # #分心行为检测
+    logging.info(f"len(distracted_samples): {len(distracted_samples)}")
     #print(len(distracted_samples))
     t1=time.time()
     Test_path=[];Test_path_video=[]
@@ -208,13 +218,15 @@ def sample_selection(df):
             a += 1
         distracted_samples['checkStatus']=Second_det_distracted_2
         distracted_samples['mergeUUId']=Merge_dis_distracted
-        logging.info(f"Second_det_distracted_2: {Second_det_distracted_2}")
-        logging.info(f"Merge_dis_distracted: {Merge_dis_distracted}")
+        logging.info(f"PID {pid}|Second_det_distracted_2: {Second_det_distracted_2}")
+        logging.info(f"PID {pid}|Merge_dis_distracted: {Merge_dis_distracted}")
         t2=time.time()
         # print(t2-t1)
+    logging.info(f'PID {pid}|Succeed in distracted detection')
 #
 # # #行人碰撞检测
     # print(len(pedestrian_samples))
+    logging.info(f"PID {pid}|len(pedestrian_samples): {len(pedestrian_samples)}")
     Test_path = [];Test_path_video = []
     t1 = time.time()
     if len(pedestrian_samples) > 0:
@@ -274,12 +286,14 @@ def sample_selection(df):
             a += 1
         pedestrian_samples['checkStatus'] = Second_det_pedestrian
         pedestrian_samples['mergeUUId'] = Merge_dis_pedestrian
-        logging.info(f"Second_det_pedestrian: {Second_det_pedestrian}")
-        logging.info(f"Merge_dis_pedestrian: {Merge_dis_pedestrian}")
+        logging.info(f"PID {pid}|Second_det_pedestrian: {Second_det_pedestrian}")
+        logging.info(f"PID {pid}|Merge_dis_pedestrian: {Merge_dis_pedestrian}")
         t2 = time.time()
         # print(t2-t1)
+    logging.info(f'PID {pid}|Succeed in pedestrian detection')
 # #驾驶行为检测
     # print(len(behavior_samples))
+    logging.info(f"PID {pid}|len(behavior_samples): {len(behavior_samples)}")
     t1=time.time()
     Test_path=[]
     Test_path_video = []
@@ -343,13 +357,14 @@ def sample_selection(df):
             a += 1
         behavior_samples['checkStatus']=Second_det_behavior
         behavior_samples['mergeUUId']=Merge_dis_behavior
-        logging.info(f"Second_det_behavior: {Second_det_behavior}")
-        logging.info(f"Merge_dis_behavior: {Merge_dis_behavior}")
+        logging.info(f"PID {pid}|Second_det_behavior: {Second_det_behavior}")
+        logging.info(f"PID {pid}|Merge_dis_behavior: {Merge_dis_behavior}")
         t2=time.time()
-
+    logging.info(f'PID {pid}|Succeed in behavior detection')
 
 #道路偏离检测
     # print(len(lane_departure_samples))
+    logging.info(f"PID {pid}|len(lane_departure_samples): {len(lane_departure_samples)}")
     t1 = time.time()
     Test_path = [];
     Test_path_2 = []
@@ -375,6 +390,7 @@ def sample_selection(df):
         length = len(lane_departure_samples)
         picture_pos_path = home_path + "/lanelines/picture_position.txt"
         video_pos_path = home_path + "/lanelines/video_position.txt"
+        logging.info(f"PID {pid}|Second_det_lane_departure|picture_pos_path:{picture_pos_path}")
         result = [4] * length
 
         if not os.path.getsize(video_pos_path) and os.path.getsize(picture_pos_path) != 0:  ###没有视频
@@ -479,11 +495,11 @@ def sample_selection(df):
         lane_departure_samples['checkStatus'] = Second_det_lane_departure
         lane_departure_samples['mergeUUId'] = Merge_dis_lane_departure
 
-        logging.info(f"Second_det_lane_departure: {Second_det_lane_departure}")
-        logging.info(f"Merge_dis_lane_departure: {Merge_dis_lane_departure}")
+        logging.info(f"PID {pid}|Second_det_lane_departure: {Second_det_lane_departure}")
+        logging.info(f"PID {pid}|Merge_dis_lane_departure: {Merge_dis_lane_departure}")
         t2 = time.time()
-        # print(Second_det_lane_departure)
         # print(t2 - t1)
+    logging.info(f'PID {pid}|Succeed in lane_departure detection')
 
     # 合并Others的重复项
     # print(len(Other_samples))
@@ -522,8 +538,8 @@ def sample_selection(df):
         a += 1
     Other_samples['checkStatus'] = Second_det_Other
     Other_samples['mergeUUId'] = Merge_dis_Other
-    logging.info(f"Second_det_Other: {Second_det_Other}")
-    logging.info(f"Merge_dis_Other: {Merge_dis_Other}")
+    logging.info(f"PID {pid}|Second_det_Other: {Second_det_Other}")
+    logging.info(f"PID {pid}|Merge_dis_Other: {Merge_dis_Other}")
     t2 = time.time()
     # print(t2 - t1)
 

@@ -77,25 +77,13 @@ def pedestrian_collision(Test_path):
                     image_dir.append(0)
                     continue
                 video = cv.VideoCapture(Test_path[i])
-                # 获取视频的帧率
-                fps = video.get(cv.CAP_PROP_FPS)
-                # 计算每秒的中间帧索引
-                mid_frame_index = fps // 2
-                frame_count = 0  # 帧计数器
-                frames = []  # 用于保存帧的列表
-                while True:
-                    # 读取视频帧
+                total_frames = int(video.get(cv.CAP_PROP_FRAME_COUNT))
+                frames_interval = total_frames // 10
+                for j in range(0, total_frames, frames_interval):
+                    video.set(cv.CAP_PROP_POS_FRAMES, j)
                     ret, frame = video.read()
-                    # 如果视频帧读取失败，退出循环
-                    if not ret:
-                        break
-                    # 检查当前帧是否是每秒的第一帧或中间帧
-                    if frame_count % fps == 0 or frame_count % fps == mid_frame_index:
-                        # 将帧添加到列表中
-                        cv_imwrite('yolo_picture/'+str(i)+'_'+str(frame_count)+'.jpg', frame)#从视频提取jpg
-                        # frames.append(Image.fromarray(cv.cvtColor(frame, cv.COLOR_BGR2RGB)))
-                    frame_count += 1
-                # 释放视频对象和关闭窗口
+                    if ret:
+                        cv_imwrite('yolo_picture/'+str(i)+'_'+str(j)+'.jpg', frame)#从视频提取jpg
                 video.release()
                 cv.destroyAllWindows()
                 image_dir.append(1)
@@ -141,11 +129,3 @@ def pedestrian_collision(Test_path):
             if os.path.isfile(file_path) and filename.endswith('.jpg'):
                 os.remove(file_path)
     return Flag
-
-
-# combined_img = yolov8_detector.draw_detections(img)
-# cv.namedWindow("Detected Objects", cv.WINDOW_NORMAL)
-# cv.imshow("Detected Objects", combined_img)
-# cv.imwrite("doc/img/test_result.png", combined_img)
-# cv.waitKey(100000)
-# cv.destroyAllWindows()

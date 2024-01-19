@@ -3,7 +3,7 @@ import clip
 import torch
 import cv2 as cv
 from PIL import Image
-
+import logging
 ### 0 正常 ### 1 疲劳 ### 2 吸烟 ### 3 接听电话 ### 4 墨镜
 def Behavior(Test_path):
     if Test_path[0][-3:] == 'jpg' :
@@ -18,6 +18,7 @@ def Behavior(Test_path):
             text_features = model.encode_text(text_inputs)
         for i in range(len(Test_path)):
             if os.path.exists(Test_path[i]):
+                #logging.info(f"path: {Test_path[i]}")
                 flag=0
                 try:
                     img = Image.open(Test_path[i])
@@ -78,6 +79,7 @@ def Behavior(Test_path):
             text_features = model.encode_text(text_inputs)
         for i in range(len(Test_path)):
             if os.path.exists(Test_path[i]):
+                #logging.info(f"path: {Test_path[i]}")
                 flag = 0
                 try:
                     img = Image.open(Test_path[i])
@@ -135,6 +137,7 @@ def Behavior(Test_path):
             if Flag_2[i]==1:
                 Flag[i]=1
 
+
     if Test_path[0][-3:] == 'mp4':
         Flag_1 = [0] * len(Test_path)
         device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -148,6 +151,7 @@ def Behavior(Test_path):
             text_features = model.encode_text(text_inputs)
         for i in range(len(Test_path)):  # 保存文件路径
             if os.path.exists(Test_path[i]):
+                #logging.info(f"path: {Test_path[i]}")
                 try:
                     cap = cv.VideoCapture(Test_path[i])
                     if not cap.isOpened():
@@ -164,24 +168,14 @@ def Behavior(Test_path):
                     image_dir.append(0)
                     continue
                 video = cv.VideoCapture(Test_path[i])
-                # 获取视频的帧率
-                fps = video.get(cv.CAP_PROP_FPS)
-                # 计算每秒的中间帧索引
-                mid_frame_index = fps // 2
-                frame_count = 0  # 帧计数器
+                total_frames = int(video.get(cv.CAP_PROP_FRAME_COUNT))
+                frames_interval = total_frames // 10
                 frames = []  # 用于保存帧的列表
-                while True:
-                    # 读取视频帧
+                for j in range(0, total_frames, frames_interval):
+                    video.set(cv.CAP_PROP_POS_FRAMES, j)
                     ret, frame = video.read()
-                    # 如果视频帧读取失败，退出循环
-                    if not ret:
-                        break
-                    # 检查当前帧是否是每秒的第一帧或中间帧
-                    if frame_count % fps == 0 or frame_count % fps == mid_frame_index:
-                        # 将帧添加到列表中
+                    if ret:
                         frames.append(Image.fromarray(cv.cvtColor(frame, cv.COLOR_BGR2RGB)))
-                    frame_count += 1
-                # 释放视频对象和关闭窗口
                 video.release()
                 cv.destroyAllWindows()
                 image_dir.append(frames)
@@ -230,6 +224,7 @@ def Behavior(Test_path):
             text_features = model.encode_text(text_inputs)
         for i in range(len(Test_path)):  # 保存文件路径
             if os.path.exists(Test_path[i]):
+                #logging.info(f"path: {Test_path[i]}")
                 try:
                     cap = cv.VideoCapture(Test_path[i])
                     if not cap.isOpened():
@@ -247,24 +242,14 @@ def Behavior(Test_path):
                     continue
 
                 video = cv.VideoCapture(Test_path[i])
-                # 获取视频的帧率
-                fps = video.get(cv.CAP_PROP_FPS)
-                # 计算每秒的中间帧索引
-                mid_frame_index = fps // 2
-                frame_count = 0  # 帧计数器
+                total_frames = int(video.get(cv.CAP_PROP_FRAME_COUNT))
+                frames_interval = total_frames // 10
                 frames = []  # 用于保存帧的列表
-                while True:
-                    # 读取视频帧
+                for j in range(0, total_frames, frames_interval):
+                    video.set(cv.CAP_PROP_POS_FRAMES, j)
                     ret, frame = video.read()
-                    # 如果视频帧读取失败，退出循环
-                    if not ret:
-                        break
-                    # 检查当前帧是否是每秒的第一帧或中间帧
-                    if frame_count % fps == 0 or frame_count % fps == mid_frame_index:
-                        # 将帧添加到列表中
+                    if ret:
                         frames.append(Image.fromarray(cv.cvtColor(frame, cv.COLOR_BGR2RGB)))
-                    frame_count += 1
-                # 释放视频对象和关闭窗口
                 video.release()
                 cv.destroyAllWindows()
                 image_dir.append(frames)

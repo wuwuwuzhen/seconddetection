@@ -26,8 +26,7 @@ def download_file(url, file_name, save_directory):
                 file.write(response.read())
             return 0
         else:
-            logging.error("download_file|Failed to download the image. Status code:",
-                  response.status_code)
+            logging.error("download_file|Failed to download the image_url", url)
             return -1
     except Exception as e:
         logging.error("download_file|Exception:", e)
@@ -51,16 +50,17 @@ def download_image_wrapper(req):
                 picture_url, pic_file_name, "./picture")
             if error_message != 0:
                 print(f"Failed to download picture from {picture_url}")
-
+            else: 
+                logging.info(f"download_image_wrapper|Succeed in downloading picture {pic_file_name}")
     # 下载视频
-    video_urls = transfer_url_list(req.get("video_url", None))
-    if video_urls is not None:
-        for video_url in video_urls:
-            video_file_name = f"{plate}_{time_str}_{t_type}.mp4"
-            error_message = download_file(
-                video_url, video_file_name, "./video")
-            if error_message != 0:
-                print(f"Failed to download video from {video_url}")
+    # video_urls = transfer_url_list(req.get("video_url", None))
+    # if video_urls is not None:
+    #     for video_url in video_urls:
+    #         video_file_name = f"{plate}_{time_str}_{t_type}.mp4"
+    #         error_message = download_file(
+    #             video_url, video_file_name, "./video")
+    #         if error_message != 0:
+    #             print(f"Failed to download video from {video_url}")
 
 
 def transfer_url_list(urls) -> list:

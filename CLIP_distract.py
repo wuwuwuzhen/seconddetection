@@ -88,24 +88,14 @@ def Cdistract(Test_path):
                     continue
 
                 video = cv.VideoCapture(Test_path[i])
-                # 获取视频的帧率
-                fps = video.get(cv.CAP_PROP_FPS)
-                # 计算每秒的中间帧索引
-                mid_frame_index = fps // 2
-                frame_count = 0  # 帧计数器
+                total_frames = int(video.get(cv.CAP_PROP_FRAME_COUNT))
+                frames_interval = total_frames // 10
                 frames = []  # 用于保存帧的列表
-                while True:
-                    # 读取视频帧
+                for j in range(0, total_frames, frames_interval):
+                    video.set(cv.CAP_PROP_POS_FRAMES, j)
                     ret, frame = video.read()
-                    # 如果视频帧读取失败，退出循环
-                    if not ret:
-                        break
-                    # 检查当前帧是否是每秒的第一帧或中间帧
-                    if frame_count % fps == 0 or frame_count % fps == mid_frame_index:
-                        # 将帧添加到列表中
+                    if ret:
                         frames.append(Image.fromarray(cv.cvtColor(frame, cv.COLOR_BGR2RGB)))
-                    frame_count += 1
-                # 释放视频对象和关闭窗口
                 video.release()
                 cv.destroyAllWindows()
                 image_dir.append(frames)
