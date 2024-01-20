@@ -8,6 +8,7 @@ from pack_req import pack_req
 import requests
 import logging
 from logging.handlers import RotatingFileHandler
+import traceback
 
 app = Flask(__name__)
 CORS(app)  # 允许跨域请求
@@ -53,7 +54,7 @@ def seconddetection():
     except Exception as e:
         # 如果在处理中出现异常，返回状态码 500 和异常信息
         logging.error(f'PID {pid}|An error occurred: {str(e)}')
-        logging.error(transback.format_exc())
+        logging.error(traceback.format_exc())
         return jsonify({"message": "An error occurred", "error": str(e)}), 500
 
 
