@@ -6,8 +6,8 @@ from detection import sample_selection
 from image_download import image_thread_pool_executor, download_image_from_req
 from pack_req import pack_req
 import requests
+import log
 import logging
-from logging.handlers import RotatingFileHandler
 import traceback
 
 app = Flask(__name__)
@@ -16,19 +16,13 @@ CORS(app)  # 允许跨域请求
 photo_path = './picture/'
 video_path = './video/'
 url = 'http://10.2.137.136:9202/alarm/filter/receive'
-# logging.basicConfig(filename='log.log', level=logging.INFO, format='%(asctime)s:%(levelname)s:%(message)s')
 
-log_formatter = logging.Formatter('%(asctime)s:%(levelname)s:%(message)s')
-handler = RotatingFileHandler('log.log', maxBytes=3*1024*1024, backupCount=5)
-handler.setFormatter(log_formatter)
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-logger.addHandler(handler)
-
+# 初始化日志
+log.init_log()
 
 @app.route('/seconddetection/', methods=['POST'])
 def seconddetection():
-    pid = os.getpid() 
+    pid = os.getpid()
     logging.info(f'PID {pid}|Request received')
     logging.info(f'{request.json}')
     try:

@@ -16,3 +16,4 @@ test.json
 .vscode
 .ipynb
 test.csv
+/logs
