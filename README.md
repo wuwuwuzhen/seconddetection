@@ -9,7 +9,7 @@ nohup gunicorn --workers 24 --timeout 3600 --bind 0.0.0.0:5000 main:app --log-le
 
 # curl 
 ```sehll
-curl --location 'http://127.0.0.1:5000/seconddetection' \
+curl --location 'http://127.0.0.1:5000/seconddetection/' \
 --header 'Content-Type: application/json' \
 --data '[
     {
