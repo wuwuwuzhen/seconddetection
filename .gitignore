@@ -6,7 +6,7 @@
 *.pth
 yolov8m.onnx
 .idea
-*.txt
+/lanelines/*.txt
 *.pyd
 *.png
 *.gif
@@ -17,3 +17,4 @@ test.json
 .ipynb
 test.csv
 /logs
+/ONNX-YOLOv8-Object-Detection/*.txt

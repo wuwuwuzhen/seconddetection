@@ -8,7 +8,12 @@ kill -9 $(pgrep gunicorn)
 tail -f -n 100 logs/hf_bus.log
 nohup gunicorn --workers 24 --timeout 3600 --bind 0.0.0.0:5000 main:app --log-level debug --access-logfile - --error-logfile - & # 这个暂时不用了
 ```
-
+# 生成patch
+```shell
+python ./get_patch.py
+git am ./patch/*.patch
+```
+```
 # curl 
 ```sehll
 curl --location 'http://127.0.0.1:5000/seconddetection/' \
