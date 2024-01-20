@@ -29,7 +29,7 @@ def is_repet(plate_type, Time, t_plate_type, alarm_time):
 def sample_selection(df):
     pid = os.getpid()
     try:
-        home_path = os.getcwd()
+        home_path = os.path.dirname(__file__)
         # path = home_path+'/Input.xlsx'
         # path = home_path + "/Input.xlsx"
         # df = pd.read_excel(path)

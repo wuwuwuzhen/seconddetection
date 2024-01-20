@@ -183,7 +183,7 @@ def args_setting():
                         help='random seed (default: 1)')
     parser.add_argument('--log-interval', type=int, default=10, metavar='N',
                         help='how many batches to wait before logging training status')
-    args = parser.parse_args()
+    args = parser.parse_args([])
     return args
 
 
