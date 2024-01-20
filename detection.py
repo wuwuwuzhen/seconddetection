@@ -386,6 +386,7 @@ def sample_selection(df):
             Test_path_video.append([test_path_video, file_name_video])
             Test_path_video_2.append(test_path_video)
         Second_det_lane_departure = lanelines.Lanelines.main(Test_path)
+        logging.info(f"PID {pid}|Lane Departure Detection|lanelines.Lanelines.main Succeed")
         Second_det_lane_departure_video = lanelines.video_Lanelines.main(Test_path_video)
         length = len(lane_departure_samples)
         picture_pos_path = home_path + "/lanelines/picture_position.txt"

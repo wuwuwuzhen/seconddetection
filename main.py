@@ -29,7 +29,7 @@ logger.addHandler(handler)
 def seconddetection():
     pid = os.getpid() 
     logging.info(f'PID {pid}|Request received')
-    logging.debug(f'{{request.json}}')
+    logging.info(f'{request.json}')
     try:
         # 下载资源
         download_image_from_req(request.json)
@@ -53,6 +53,7 @@ def seconddetection():
     except Exception as e:
         # 如果在处理中出现异常，返回状态码 500 和异常信息
         logging.error(f'PID {pid}|An error occurred: {str(e)}')
+        logging.error(transback.format_exc())
         return jsonify({"message": "An error occurred", "error": str(e)}), 500
 
 
