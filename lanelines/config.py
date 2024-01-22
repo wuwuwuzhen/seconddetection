@@ -1,5 +1,5 @@
 import argparse
-
+import os
 # globel param
 # dataset setting
 img_width = 256
@@ -11,22 +11,25 @@ label_channel = 1
 data_loader_numworkers = 8
 class_num = 2
 
-# path
-train_path = "./data/train_index.txt"
-val_path = "./data/val_index.txt"
-resize_path="./lanelines/resize/"
-test_path = "./lanelines/picture.txt"            ###深度学习输入文件
-save_path = "./lanelines/result/"  ###深度学习检测结果保存路径
-pretrained_path='./pretrained/unetlstm.pth'  ###预训练模型路径
-save_path_resize = "./lanelines/result_resize/"
+root_path = os.path.dirname(__file__)
+train_path = os.path.join(root_path, 'data/train_index.txt')
+val_path = os.path.join(root_path, 'data/val_index.txt')
+resize_path = os.path.join(root_path, 'resize')
+test_path = os.path.join(root_path, 'picture.txt')  # 深度学习输入文件
+save_path = os.path.join(root_path, 'result')  # 深度学习检测结果保存路径
+pretrained_path = os.path.join(root_path, 'pretrained/unetlstm.pth')  # 预训练模型路径
+save_path_resize = os.path.join(root_path, 'result_resize')
+
 
 # weight
 class_weight = [0.02, 1.02]
 
+
 def args_setting():
     # Training settings
     parser = argparse.ArgumentParser(description='PyTorch UNet-ConvLSTM')
-    parser.add_argument('--model',type=str, default='UNet-ConvLSTM',help='( UNet-ConvLSTM | SegNet-ConvLSTM | UNet | SegNet | ')
+    parser.add_argument('--model', type=str, default='UNet-ConvLSTM',
+                        help='( UNet-ConvLSTM | SegNet-ConvLSTM | UNet | SegNet | ')
     parser.add_argument('--batch-size', type=int, default=15, metavar='N',
                         help='input batch size for training (default: 10)')
     parser.add_argument('--test-batch-size', type=int, default=1, metavar='N',

@@ -26,8 +26,7 @@ class_num = 2
 
 # path
 #home_path = "D:/college/研究生/驾驶行为检测/Demo_picture_video_12.25"
-home_path = os.path.abspath('../..')
-home_path = os.getcwd()
+home_path = os.path.dirname(__file__)
 resize_path=home_path+"/lanelines/resize"
 test_path = home_path+"/lanelines/picture.txt"
 picture_pos_path = home_path+"/lanelines/picture_position.txt"
@@ -107,7 +106,7 @@ def unetlstmtxt():
         for file in files:
             list1 = []
             for i in range(6):
-                file_path = "../../lanelines/resize/" + file  #需要调整
+                file_path = os.path.join(home_path, 'resize', file)
                 list1.append(file_path)
             list.append(list1)
     df = pd.DataFrame(list)
