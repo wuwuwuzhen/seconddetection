@@ -124,7 +124,7 @@ def vehicle_collision(Test_path):
                                 Flag[i] = 1
                 if Flag[i] != 1:
                     Flag[i] =2
-        dir_path = os.path.join(yolo_model_path.root_path, 'yolo_picture')
+        dir_path = os.path.join(model_path.root_path, 'yolo_picture')
         for filename in os.listdir(dir_path):
             # 构造文件的完整路径
             file_path = os.path.join(dir_path, filename)
