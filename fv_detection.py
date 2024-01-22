@@ -15,7 +15,7 @@ def cv_imwrite(file_path,img):
     return cv_img
 def vehicle_collision(Test_path):
     #Initialize yolov8 object detector
-    yolo_model_path = os.path.join(model_path.root_path, 'model/yolov8m.onnx')
+    yolo_model_path = os.path.join(model_path.root_path, 'models/yolov8m.onnx')
     yolov8_detector = YOLOv8(yolo_model_path, conf_thres=0.2, iou_thres=0.3)
     if Test_path[0][-3:] == 'jpg':
         Flag=[0]*len(Test_path)
