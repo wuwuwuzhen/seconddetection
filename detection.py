@@ -12,6 +12,7 @@ import time
 from fv_detection import vehicle_collision
 import logging
 import traceback
+import model_path
 
 
 def is_repet(plate_type, Time, t_plate_type, alarm_time):

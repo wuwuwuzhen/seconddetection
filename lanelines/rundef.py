@@ -27,13 +27,13 @@ class_num = 2
 # path
 #home_path = "D:/college/研究生/驾驶行为检测/Demo_picture_video_12.25"
 home_path = os.path.dirname(__file__)
-resize_path=home_path+"/lanelines/resize"
-test_path = home_path+"/lanelines/picture.txt"
-picture_pos_path = home_path+"/lanelines/picture_position.txt"
-save_path = home_path+"/lanelines/result/"
-result_path = home_path+"/lanelines/result_resize/"
-pretrained_path=home_path+'/lanelines/pretrained/unetlstm.pth'
-lane_path = home_path+"/lanelines/result_lane/"
+resize_path=home_path+"/resize"
+test_path = home_path+"/picture.txt"
+picture_pos_path = home_path+"/picture_position.txt"
+save_path = home_path+"/result/"
+result_path = home_path+"/result_resize/"
+pretrained_path=home_path+'/pretrained/unetlstm.pth'
+lane_path = home_path+"/result_lane/"
 
 
 # weight
