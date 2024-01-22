@@ -9,12 +9,13 @@ import requests
 import log
 import logging
 import traceback
+import model_path
 
 app = Flask(__name__)
 CORS(app)  # 允许跨域请求
 
-photo_path = './picture/'
-video_path = './video/'
+photo_path = os.path.join(model_path.root_path, 'picture')
+video_path = os.path.join(model_path.root_path, 'video')
 url = 'http://10.2.137.136:9202/alarm/filter/receive'
 
 # 初始化日志
