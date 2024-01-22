@@ -11,6 +11,7 @@ import torch
 import time
 from fv_detection import vehicle_collision
 import logging
+import traceback
 
 
 def is_repet(plate_type, Time, t_plate_type, alarm_time):
@@ -167,7 +168,7 @@ def sample_selection(df):
         logging.info(f'PID {pid}|Succeed in distance detection')
     except Exception as e:
         logging.error(
-            f'PID {pid}|An error occurred: Distance detection failed')
+            f'PID {pid}|An error occurred: Distance detection failed, {traceback.format_exc()}')
 #
 # #分心行为检测
     logging.info(f"len(distracted_samples): {len(distracted_samples)}")
