@@ -28,14 +28,14 @@ class_num = 2
 #home_path="D:/college/研究生/驾驶行为检测/Demo_picture_video_12.25"
 
 home_path = os.path.dirname(__file__)
-resize_path=home_path+"/lanelines/video_resize"
-test_path = home_path+"/lanelines/video.txt"
-fps_path = home_path+"/lanelines/video_fps.txt"
-video_pos_path = home_path+"/lanelines/video_position.txt"
-save_path = home_path+"/lanelines/video_result/"
-result_path = home_path+"/lanelines/video_result_resize/"
-pretrained_path=home_path+'/lanelines/pretrained/unetlstm.pth'
-lane_path = home_path+"/lanelines/video_result_lane/"
+resize_path=home_path+"/video_resize"
+test_path = home_path+"/video.txt"
+fps_path = home_path+"/video_fps.txt"
+video_pos_path = home_path+"/video_position.txt"
+save_path = home_path+"/video_result/"
+result_path = home_path+"/video_result_resize/"
+pretrained_path=home_path+'/pretrained/unetlstm.pth'
+lane_path = home_path+"/video_result_lane/"
 
 
 # weight
