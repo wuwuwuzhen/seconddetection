@@ -4,13 +4,14 @@ import torch
 import cv2 as cv
 from PIL import Image
 import logging
+import model_path
 ### 0 正常 ### 1 疲劳 ### 2 吸烟 ### 3 接听电话 ### 4 墨镜
 def Behavior(Test_path):
     if Test_path[0][-3:] == 'jpg' :
         Flag_1 = [0]*len(Test_path)
         device = "cuda" if torch.cuda.is_available() else "cpu"
         # model, preprocess = clip.load('ViT-L/14', device)#RN50x64
-        model, preprocess = clip.load('./ViT-L-14.pt', device)#./RN50x64.pt
+        model, preprocess = clip.load(model_path.vit_l_14_path, device)
         text_inputs = torch.cat([clip.tokenize(
             ["A person is looking straight ahead.", "A person closes eyes.", "A person is yawning.", "A person is smoking.",
              "A person is using a phone.", 'A person wears sunglasses or mask'])]).to(device)
@@ -71,7 +72,7 @@ def Behavior(Test_path):
         Flag_2 = [0]*len(Test_path)
         device = "cuda" if torch.cuda.is_available() else "cpu"
         # model, preprocess = clip.load('RN50x64', device)  # 闭眼判定的鲁棒性
-        model, preprocess = clip.load('./RN50x64.pt', device)  # 闭眼判定的鲁棒性
+        model, preprocess = clip.load(model_path.rn_50_x64_path, device)  # 闭眼判定的鲁棒性
         text_inputs = torch.cat([clip.tokenize(
             ["A person is looking straight ahead.", "A person closes eyes.", "A person is yawning.","A person is smoking.",
              "A person is using a phone.", 'A person wears sunglasses or mask'])]).to(device)
@@ -143,7 +144,7 @@ def Behavior(Test_path):
         device = "cuda" if torch.cuda.is_available() else "cpu"
         image_dir = []
         # model, preprocess = clip.load('ViT-L/14', device)  # RN50x64
-        model, preprocess = clip.load('./ViT-L-14.pt', device)  # ./RN50x64.pt
+        model, preprocess = clip.load(model_path.vit_l_14_path, device)  
         text_inputs = torch.cat([clip.tokenize(
             ["A person is looking straight ahead.", "A person closes eyes.", "A person is yawning.", "A person is smoking.",
              "A person is using a phone.", 'A person wears sunglasses or mask'])]).to(device)
@@ -216,7 +217,7 @@ def Behavior(Test_path):
         device = "cuda" if torch.cuda.is_available() else "cpu"
         image_dir = []
         # model, preprocess = clip.load('RN50x64', device)  # RN50x64
-        model, preprocess = clip.load('./RN50x64.pt', device)  # ./RN50x64.pt
+        model, preprocess = clip.load(model_path.rn_50_x64_path, device) 
         text_inputs = torch.cat([clip.tokenize(
             ["A person is looking straight ahead.", "A person closes eyes.", "A person is yawning.",
              "A person is smoking.","A person is using a phone.", 'A person wears sunglasses or mask'])]).to(device)

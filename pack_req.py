@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import json
 
 
@@ -9,8 +10,8 @@ def pack_req(df):
         alarm_day = pd.to_datetime(row['alarm_begin_time']).strftime('%Y-%m-%d')
         alarm_details = {
             "id": row['id'],
-            "checkStatus": row['checkStatus'],
-            "mergeUUId": row['mergeUUId']
+            "checkStatus": None if pd.isna(row['checkStatus']) else row['checkStatus'],
+            "mergeUUId": None if pd.isna(row['mergeUUId']) else row['mergeUUId']
         }
         alarms_list.append({
             "day": alarm_day,
