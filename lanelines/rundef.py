@@ -202,7 +202,7 @@ def rename():
             for i in range(int(total_num/2)):
                 if item==(format(str(i + 1)) + '_pred.jpg'):
                     filename = data.loc[i][0]
-                    filename = filename[23:]
+                    filename = filename.split('/')[-1]
                     file_path = os.path.join(saveFile, filename)
                     item_path = pathin+"//" + item
                     image1 = cv_imread(item_path)
