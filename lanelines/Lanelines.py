@@ -64,17 +64,13 @@ def get_parameters(model, layer_name):
                         yield parma
 
 def main(picture_path):
-    pid=os.getpid()
     start = time.process_time()
     resize(picture_path)
-    logging.info(f"PID {pid}|lane_departure|picture: Succeed in resize")
     unetlstmtxt()
-    logging.info(f"PID {pid}|lane_departure|picture: Succeed in unetlstmtxt")
     args = args_setting()
-    logging.info(f"PID {pid}|lane_departure|args:{args}")
     torch.manual_seed(args.seed)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    logging.info(f"PID {pid}|lane_departure|device:{device}")
+    logging.debug(f"[lane_departure] device:{device}")
 
     # turn image into floatTensor
     op_tranforms = transforms.Compose([transforms.ToTensor()])
@@ -92,7 +88,7 @@ def main(picture_path):
     model = generate_model(args)
     model.to(device)
     class_weight = torch.Tensor(lanelines.rundef.class_weight)
-    logging.info(f"PID {pid}|lane_departure|class_weight:{class_weight}")
+    logging.debug(f"[lane_departure] class_weight:{class_weight}")
     criterion = torch.nn.CrossEntropyLoss(weight=class_weight).to(device)
 
     pretrained_dict = torch.load(lanelines.rundef.pretrained_path,map_location=torch.device('cpu'))
@@ -103,8 +99,6 @@ def main(picture_path):
 
     # output the result pictures
     output_result(args, model, test_loader, device)
-    logging.info(f"PID {pid}|lane_departure|picture: Succeed in output_result")
     end3 = time.process_time()
     rename()
-    logging.info(f"PID {pid}|lane_departure|picture: Succeed in rename")
     return(detection())

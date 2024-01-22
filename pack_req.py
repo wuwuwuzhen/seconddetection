@@ -1,12 +1,9 @@
 import pandas as pd
-import numpy as np
-import json
-
+import config
 
 def pack_req(df):
     alarms_list = []
     for _, row in df.iterrows():
-        # Extract the date part from the 'alarm_begin_time' and format it
         alarm_day = pd.to_datetime(row['alarm_begin_time']).strftime('%Y-%m-%d')
         alarm_details = {
             "id": row['id'],
@@ -20,7 +17,7 @@ def pack_req(df):
 
     json_payload = {
         "alarms": alarms_list,
-        "akSecret": "c9be232e30284969b72ac5fac4135113"
+        "akSecret": config.ak_secret
     }
     return json_payload
 

@@ -6,7 +6,7 @@ import pandas as pd
 import json
 from concurrent.futures import ThreadPoolExecutor
 import logging
-import model_path
+import config
 
 def download_file(url, file_name, save_directory):
 
@@ -27,10 +27,9 @@ def download_file(url, file_name, save_directory):
                 file.write(response.read())
             return 0
         else:
-            logging.error("download_file|Failed to download the image_url", url)
             return -1
     except Exception as e:
-        logging.error("download_file|Exception:", e)
+        logging.error(f"[download_file] exception:{e}")
         return -1
 
 
@@ -43,25 +42,25 @@ def download_image_wrapper(req):
     # 下载图片
     picture_urls = transfer_url_list(req.get("picture_url", None))
     if picture_urls is None:
-        logging.info("download_image_wrapper|No picture url")
+        logging.warning("[download_image_wrapper] no picture url")
     else:
         for picture_url in picture_urls:
             pic_file_name = f"{plate}_{time_str}_{t_type}.jpg"
             error_message = download_file(
-                picture_url, pic_file_name, os.path.join(model_path.root_path, 'picture'))
+                picture_url, pic_file_name, os.path.join(config.root_path, 'picture'))
             if error_message != 0:
-                print(f"Failed to download picture from {picture_url}")
+                logging.warning(f"[download_image_wrapper] failed to download picture from {picture_url}")
             else: 
-                logging.info(f"download_image_wrapper|Succeed in downloading picture {pic_file_name}")
+                logging.debug(f"[download_image_wrapper] succeeded in downloading picture {pic_file_name}")
     # 下载视频
     video_urls = transfer_url_list(req.get("video_url", None))
     if video_urls is not None:
         for video_url in video_urls:
             video_file_name = f"{plate}_{time_str}_{t_type}.mp4"
             error_message = download_file(
-                video_url, video_file_name, os.path.join(model_path.root_path,"video"))
+                video_url, video_file_name, os.path.join(config.root_path,"video"))
             if error_message != 0:
-                print(f"Failed to download video from {video_url}")
+                logging.info(f"[download_image_wrapper] failed to download video from {video_url}")
 
 
 def transfer_url_list(urls) -> list:
