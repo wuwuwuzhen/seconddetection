@@ -35,7 +35,7 @@ def delete_files_in_paths(expire_time, *paths):
                 mtime = os.path.getmtime(file_name)
                 if now_time - mtime > expire_time:
                     # 测试没问题后取消注释
-                    # os.remove(file_name)
+                    os.remove(file_name)
                     logging.info(
                         f'{file_name} deleted, mtime is {time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(mtime))}')
             for dir in dirs:
