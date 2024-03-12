@@ -2,17 +2,6 @@ import os
 import time
 import logging
 from logging.handlers import TimedRotatingFileHandler
-'''
-# 配置定时任务
-执行 crontab -e
-按实际情况输入  
-0 0 * * * python /path/to/your/script/delete_file.py
-保存并退出
-
-# 使脚本可执行
-chmod +x /path/to/your/script/delete_file.py
-
-'''
 
 
 def init_log():
@@ -29,6 +18,8 @@ def init_log():
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
     logger.addHandler(handler)
+
+# 删除最近修改时间超过expire_time的文件
 
 
 def delete_files_in_paths(expire_time, *paths):
@@ -56,10 +47,9 @@ def delete_files_in_paths(expire_time, *paths):
 
 if __name__ == '__main__':
     init_log()
-    # 获取当前文件的完整路径
-    current_file_path = os.path.realpath(__file__)
-    # 获取当前文件所在的目录
-    # 7days
-    current_dir = os.path.dirname(current_file_path)
-    delete_files_in_paths(3600 * 24 * 7, os.path.join(current_dir,
-                          'video'), os.path.join(current_dir, 'picture'))
+
+    # 每天执行一次
+    while True:
+        delete_files_in_paths(3600 * 24 * 7,
+                              './video', './picture')
+        time.sleep(3600 * 24)
