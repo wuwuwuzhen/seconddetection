@@ -14,7 +14,7 @@ yolov8m.onnx
 *.log
 test.json
 .vscode
-.ipynb
+*.ipynb
 test.csv
 /logs
 /ONNX-YOLOv8-Object-Detection/*.txt

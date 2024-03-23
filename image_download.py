@@ -7,6 +7,7 @@ import json
 from concurrent.futures import ThreadPoolExecutor
 import logging
 import config
+import pandas as pd
 
 def download_file(url, file_name, save_directory):
 
@@ -82,3 +83,32 @@ def image_thread_pool_executor(df):
 def download_image_from_req(req_list: list) -> None:
     for req in req_list:
         download_image_wrapper(req)
+
+
+def df_row_download(row, temp_file_path):
+    plate = row['plate'][1:]
+    alarm_time = pd.to_datetime(row['alarm_begin_time'])
+    time_str = alarm_time.strftime('%Y%m%d_%H%M%S')
+    t_type = row['exception_type']
+
+    if pd.notna(row['video_url']) and len(row['video_url']) != 0:
+
+        video_url = row["video_url"][2:-2]
+        # 下载视频
+        video_file_name = f"{plate}_{time_str}_{t_type}.mp4"
+        video_file_path = os.path.join(temp_file_path, "video")
+        error_message = download_file(video_url, video_file_name, video_file_path)
+        if error_message != 0:
+            print(f"Failed to download video from {video_url}")
+        else:
+            print(f"Successfully downloaded {video_file_name}")
+    
+    picture_url = row["picture_url"][2:-2]
+    pic_file_name = f"{plate}_{time_str}_{t_type}.jpg"
+    # 下载图片
+    picture_file_path = os.path.join(temp_file_path, "picture")
+    error_message = download_file(picture_url, pic_file_name, picture_file_path)
+    if error_message != 0:
+        print(f"Failed to download picture from {picture_url}")
+    else:
+        print(f"Successfully downloaded {pic_file_name}")

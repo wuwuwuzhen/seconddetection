@@ -27,7 +27,7 @@ def count_openable_images(directory):
     return total_images, openable_images
 
 # Set your directory
-image_directory = 'tar/picture_1'  # Update this path to the directory containing your images
+image_directory = './picture'  # Update this path to the directory containing your images
 
 # Call the function
 count_openable_images(image_directory)
