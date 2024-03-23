@@ -20,3 +20,4 @@ test.csv
 /ONNX-YOLOv8-Object-Detection/*.txt
 /csv
 /tar
+/delete_logs
