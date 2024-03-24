@@ -3,14 +3,15 @@ import clip
 import torch
 import cv2 as cv
 from PIL import Image
+import config 
 
 ### 0 正常 ### 1 疲劳 ### 2 吸烟 ### 3 接听电话 ### 4 墨镜
 def Cdistract(Test_path):
     if Test_path[0][-3:] == 'jpg':
         Flag=[0]*len(Test_path)
         device = "cuda" if torch.cuda.is_available() else "cpu"
-        model, preprocess = clip.load('./ViT-L-14.pt', device)#RN50x64
-        # model, preprocess = clip.load('./ViT-L-14.pt', device)#RN50x64
+        model, preprocess = clip.load(config.vit_l_14_path, device)
+
         text_inputs = torch.cat([clip.tokenize(
             ["A person is looking one side.", 'A person closes eyes.', "A person is looking straight ahead.",
              "A person wears a mask", "A person wears sunglasses."])]).to(device)
@@ -62,8 +63,7 @@ def Cdistract(Test_path):
         Flag = [0] * len(Test_path)
         device = "cuda" if torch.cuda.is_available() else "cpu"
         image_dir = []
-        model, preprocess = clip.load('./ViT-L-14.pt', device)  # RN50x64
-        # model, preprocess = clip.load('./ViT-L-14.pt', device)  # RN50x64
+        model, preprocess = clip.load(config.vit_l_14_path, device)  
         text_inputs = torch.cat([clip.tokenize(
             ["A person is looking one side.", 'A person closes eyes.', "A person is looking straight ahead.",
              "A person wears a mask", "A person wears sunglasses."])]).to(device)
