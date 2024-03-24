@@ -34,7 +34,7 @@ def download_file(url, file_name, save_directory):
         return -1
 
 
-def download_image_wrapper(req):
+def download_image_wrapper(req, temp_file_path):
     plate = req['plate'][1:]
     alarm_time = pd.to_datetime(req['alarm_begin_time'])
     time_str = alarm_time.strftime('%Y%m%d_%H%M%S')
@@ -48,7 +48,7 @@ def download_image_wrapper(req):
         for picture_url in picture_urls:
             pic_file_name = f"{plate}_{time_str}_{t_type}.jpg"
             error_message = download_file(
-                picture_url, pic_file_name, os.path.join(config.root_path, 'picture'))
+                picture_url, pic_file_name, os.path.join(temp_file_path, 'picture'))
             if error_message != 0:
                 logging.warning(f"[download_image_wrapper] failed to download picture from {picture_url}")
             else: 
@@ -59,7 +59,7 @@ def download_image_wrapper(req):
         for video_url in video_urls:
             video_file_name = f"{plate}_{time_str}_{t_type}.mp4"
             error_message = download_file(
-                video_url, video_file_name, os.path.join(config.root_path,"video"))
+                video_url, video_file_name, os.path.join(temp_file_path,"video"))
             if error_message != 0:
                 logging.info(f"[download_image_wrapper] failed to download video from {video_url}")
 
