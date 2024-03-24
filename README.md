@@ -1,20 +1,27 @@
-# docker
+# Readme
+
+## docker
+
 ```shell
 docker exec -it 69 /bin/zsh
 ps -ef | grep python
 cd data/code/hf_bus
 pkill -f python
 kill -9 $(pgrep gunicorn)
+## nohup gunicorn --workers 1 --threads 1  --timeout 3600 --bind 0.0.0.0:5000 main:app --log-level debug --access-logfile - --error-logfile - &
+nohup python main.py & 
 tail -f -n 100 logs/hf_bus.log
-nohup gunicorn --workers 1 --threads 1  --timeout 3600 --bind 0.0.0.0:5000 main:app --log-level debug --access-logfile - --error-logfile - &
 ```
-# 生成patch
+
+## 将本地修改更新到服务器
+
 ```shell
-python ./get_patch.py
-git am ./patch/*.patch
+1. 替换.git文件夹
+2. git checkout .
 ```
-```
-# curl 
+
+## curl示例
+
 ```sehll
 curl --location 'http://127.0.0.1:5000/seconddetection/' \
 --header 'Content-Type: application/json' \
