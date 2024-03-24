@@ -45,7 +45,6 @@ def Behavior(Test_path):
                             image_input = preprocess(image).unsqueeze(0).to(device)
                             with torch.no_grad():
                                 image_features = model.encode_image(image_input)
-                                text_features = model.encode_text(text_inputs)
                             image_features /= image_features.norm(dim=-1, keepdim=True)
                             text_features /= text_features.norm(dim=-1, keepdim=True)
                             similarity = (100.0 * image_features @ text_features.T).softmax(dim=-1)
@@ -108,10 +107,10 @@ def Behavior(Test_path):
                             image_input = preprocess(image).unsqueeze(0).to(device)
                             with torch.no_grad():
                                 image_features = model.encode_image(image_input)
-                                text_features = model.encode_text(text_inputs)
                             image_features /= image_features.norm(dim=-1, keepdim=True)
                             text_features /= text_features.norm(dim=-1, keepdim=True)
                             similarity = (100.0 * image_features @ text_features.T).softmax(dim=-1)
+
                             a = similarity[0].tolist()
                             re_a = sorted(a, reverse=True)
                             index = a.index(max(a))
@@ -137,6 +136,7 @@ def Behavior(Test_path):
             Flag[i]=Flag_1[i]
             if Flag_2[i]==1:
                 Flag[i]=1
+
 
 
     if Test_path[0][-3:] == 'mp4':
@@ -169,8 +169,9 @@ def Behavior(Test_path):
                     image_dir.append(0)
                     continue
                 video = cv.VideoCapture(Test_path[i])
+                fps = video.get(cv.CAP_PROP_FPS)
                 total_frames = int(video.get(cv.CAP_PROP_FRAME_COUNT))
-                frames_interval = total_frames // 10
+                frames_interval = int(fps // 2)
                 frames = []  # 用于保存帧的列表
                 for j in range(0, total_frames, frames_interval):
                     video.set(cv.CAP_PROP_POS_FRAMES, j)
@@ -185,6 +186,7 @@ def Behavior(Test_path):
 
         for i in range(len(image_dir)):
             if image_dir[i] == 0:
+                Flag_1[i]=4
                 continue
             else:
                 t_flag = []  # 存储每帧的结果，输出为最多的类
@@ -208,10 +210,12 @@ def Behavior(Test_path):
                     elif index == 4:
                         flag = 3
                     t_flag.append(flag)
-            if 1 in t_flag:
-                Flag_1[i] = 1
-            else:
-                Flag_1[i] = max(set(t_flag), key=t_flag.count)
+                for j in range(len(t_flag) - 3):  # 连续4帧图片均判定为疲劳
+                    if t_flag[j] == 1 and t_flag[j + 1] == 1 and t_flag[j + 2] == 1 and t_flag[j + 3] == 1:
+                        Flag_1[i] = 1
+                        break
+                if Flag_1[i] != 1:
+                    Flag_1[i] = max(set(t_flag), key=t_flag.count)
 
         Flag_2 = [0] * len(Test_path)
         device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -243,8 +247,9 @@ def Behavior(Test_path):
                     continue
 
                 video = cv.VideoCapture(Test_path[i])
+                fps = video.get(cv.CAP_PROP_FPS)
                 total_frames = int(video.get(cv.CAP_PROP_FRAME_COUNT))
-                frames_interval = total_frames // 10
+                frames_interval = int(fps // 2)
                 frames = []  # 用于保存帧的列表
                 for j in range(0, total_frames, frames_interval):
                     video.set(cv.CAP_PROP_POS_FRAMES, j)
@@ -259,6 +264,7 @@ def Behavior(Test_path):
 
         for i in range(len(image_dir)):
             if image_dir[i] == 0:
+                Flag_2[i] = 4
                 continue
             else:
                 t_flag = []  # 存储每帧的结果，输出为最多的类
@@ -282,10 +288,12 @@ def Behavior(Test_path):
                     elif index == 4:
                         flag = 3
                     t_flag.append(flag)
-            if 1 in t_flag:
-                Flag_2[i] = 1
-            else:
-                Flag_2[i] = max(set(t_flag), key=t_flag.count)
+                for j in range(len(t_flag)-3):#连续4帧图片均判定为疲劳
+                    if t_flag[j] == 1 and t_flag[j+1] == 1 and t_flag[j+2] == 1 and t_flag[j+3] == 1:
+                        Flag_2[i] = 1
+                        break
+                if Flag_2[i] != 1:
+                    Flag_2[i] = max(set(t_flag), key=t_flag.count)
 
         Flag = [0] * len(Test_path)
         for i in range(len(Flag_1)):

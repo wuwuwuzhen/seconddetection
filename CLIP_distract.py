@@ -89,8 +89,9 @@ def Cdistract(Test_path):
                     continue
 
                 video = cv.VideoCapture(Test_path[i])
+                fps = video.get(cv.CAP_PROP_FPS)
                 total_frames = int(video.get(cv.CAP_PROP_FRAME_COUNT))
-                frames_interval = total_frames // 10
+                frames_interval = fps // 2
                 frames = []  # 用于保存帧的列表
                 for j in range(0, total_frames, frames_interval):
                     video.set(cv.CAP_PROP_POS_FRAMES, j)
@@ -104,9 +105,9 @@ def Cdistract(Test_path):
                 image_dir.append(0)
         for i in range(len(image_dir)):
             if image_dir[i] == 0:
-                Flag[i] = 4
                 continue
             else:
+                t_flag = []
                 for j in range(len(image_dir[i])):
                     image_input = preprocess(image_dir[i][j]).unsqueeze(0).to(device)
                     with torch.no_grad():
@@ -119,7 +120,14 @@ def Cdistract(Test_path):
                     index = a.index(max(a))
                     index_2 = a.index(re_a[1])  # 认定Top2
                     if (index in [0, 1]) or (index_2 in [0, 1]):
+                        flag = 1
+                    else:
+                        flag=0
+                    t_flag.append(flag)
+                for j in range(len(t_flag)-3):#连续4帧图片均判定为疲劳
+                    if t_flag[j] == 1 and t_flag[j+1] == 1 and t_flag[j+2] == 1 and t_flag[j+3] == 1:
                         Flag[i] = 1
+                        break
                 if Flag[i] != 1:
                     Flag[i]=2
     return Flag
