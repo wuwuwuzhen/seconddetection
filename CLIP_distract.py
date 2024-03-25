@@ -90,7 +90,7 @@ def Cdistract(Test_path):
                 video = cv.VideoCapture(Test_path[i])
                 fps = video.get(cv.CAP_PROP_FPS)
                 total_frames = int(video.get(cv.CAP_PROP_FRAME_COUNT))
-                frames_interval = fps // 2
+                frames_interval = int(fps // 2)
                 frames = []  # 用于保存帧的列表
                 for j in range(0, total_frames, frames_interval):
                     video.set(cv.CAP_PROP_POS_FRAMES, j)

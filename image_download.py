@@ -82,7 +82,7 @@ def image_thread_pool_executor(df):
 
 def download_image_from_req(req_list: list) -> None:
     for req in req_list:
-        download_image_wrapper(req)
+        download_image_wrapper(req, config.root_path)
 
 
 def df_row_download(row, temp_file_path):
