@@ -90,16 +90,28 @@ def Cdistract(Test_path):
                 video = cv.VideoCapture(Test_path[i])
                 fps = video.get(cv.CAP_PROP_FPS)
                 total_frames = int(video.get(cv.CAP_PROP_FRAME_COUNT))
-                frames_interval = int(fps // 2)
-                frames = []  # 用于保存帧的列表
-                for j in range(0, total_frames, frames_interval):
-                    video.set(cv.CAP_PROP_POS_FRAMES, j)
-                    ret, frame = video.read()
-                    if ret:
-                        frames.append(Image.fromarray(cv.cvtColor(frame, cv.COLOR_BGR2RGB)))
-                video.release()
-                cv.destroyAllWindows()
-                image_dir.append(frames)
+                if total_frames / fps >= 10:
+                    frames_interval = total_frames // 20
+                    frames = []  # 用于保存帧的列表
+                    for j in range(0, total_frames, frames_interval):
+                        video.set(cv.CAP_PROP_POS_FRAMES, j)
+                        ret, frame = video.read()
+                        if ret:
+                            frames.append(Image.fromarray(cv.cvtColor(frame, cv.COLOR_BGR2RGB)))
+                    video.release()
+                    cv.destroyAllWindows()
+                    image_dir.append(frames)
+                else:
+                    frames_interval = int(fps // 2)
+                    frames = []  # 用于保存帧的列表
+                    for j in range(0, total_frames, frames_interval):
+                        video.set(cv.CAP_PROP_POS_FRAMES, j)
+                        ret, frame = video.read()
+                        if ret:
+                            frames.append(Image.fromarray(cv.cvtColor(frame, cv.COLOR_BGR2RGB)))
+                    video.release()
+                    cv.destroyAllWindows()
+                    image_dir.append(frames)
             else:
                 image_dir.append(0)
         for i in range(len(image_dir)):
