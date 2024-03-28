@@ -8,8 +8,8 @@ ps -ef | grep python
 cd data/code/hf_bus
 pkill -f python
 kill -9 $(pgrep gunicorn)
-## nohup gunicorn --workers 1 --threads 1  --timeout 3600 --bind 0.0.0.0:5000 main:app --log-level debug --access-logfile - --error-logfile - &
-nohup python main.py & 
+## 单线程运行
+nohup gunicorn --workers 1 --threads 1  --timeout 3600 --bind 0.0.0.0:5000 main:app --log-level debug --access-logfile - --error-logfile - &
 tail -f -n 100 logs/hf_bus.log
 ```
 
