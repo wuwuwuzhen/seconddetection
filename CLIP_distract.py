@@ -86,7 +86,7 @@ def Cdistract(Test_path):
                 except Exception as e:
                     image_dir.append(0)
                     continue
-
+                #等距抽取8帧
                 video = cv.VideoCapture(Test_path[i])
                 total_frames = int(video.get(cv.CAP_PROP_FRAME_COUNT))
                 frames_interval = total_frames // 8  # 等间距取8张
