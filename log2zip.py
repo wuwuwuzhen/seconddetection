@@ -25,7 +25,7 @@ def extract_json_from_line(line):
 
 
 if __name__ == "__main__":
-    log_time = "2024_03_24"
+    log_time = "2024_04_04"
     temp_file_path = os.path.join(config.root_path, log_time)
     if not os.path.exists(temp_file_path):
         os.makedirs(temp_file_path)
@@ -70,7 +70,6 @@ if __name__ == "__main__":
     exception_str = '+'.join(config.filter_exception_name)
     filtered_df.to_excel(os.path.join(
         temp_file_path, exception_str + '.xlsx'), index=False)
-
     for index, row in filtered_df.iterrows():
         # df_row_download(row, temp_file_path)
         download_image_wrapper(row, temp_file_path)

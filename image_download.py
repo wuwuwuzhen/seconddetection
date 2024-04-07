@@ -65,13 +65,15 @@ def download_image_wrapper(req, temp_file_path):
 
 
 def transfer_url_list(urls) -> list:
-    if urls is None:
+    try:
+        if urls is None :
+            return None
+        if type(urls) == list:
+            return urls
+        if type(urls) == str:
+            return json.loads(urls)
+    except:
         return None
-    if type(urls) == list:
-        return urls
-    if type(urls) == str:
-        return json.loads(urls)
-    return None
 
 
 def image_thread_pool_executor(df):
