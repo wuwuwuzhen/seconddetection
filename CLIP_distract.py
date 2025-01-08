@@ -7,6 +7,7 @@ import config
 
 ### 0 正常 ### 1 疲劳 ### 2 吸烟 ### 3 接听电话 ### 4 墨镜
 def Cdistract(Test_path):
+    # print('distract')
     if Test_path[0][-3:] == 'jpg':
         Flag=[0]*len(Test_path)
         device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -63,6 +64,8 @@ def Cdistract(Test_path):
         Flag = [0] * len(Test_path)
         device = "cuda" if torch.cuda.is_available() else "cpu"
         image_dir = []
+        image_dir_list = []
+        image_dir_half = []
         model, preprocess = clip.load(config.vit_l_14_path, device)  
         text_inputs = torch.cat([clip.tokenize(
             ["A person is looking one side.", 'A person closes eyes.', "A person is looking straight ahead.",
@@ -89,11 +92,19 @@ def Cdistract(Test_path):
                 #等距抽取8帧
                 video = cv.VideoCapture(Test_path[i])
                 total_frames = int(video.get(cv.CAP_PROP_FRAME_COUNT))
-                frames_interval = total_frames // 8  # 等间距取8张
+                if 8 >= total_frames > 1:
+                    frames_interval = total_frames // (total_frames - 1)
+                elif total_frames <= 1:
+                    frames_interval = 1
+                    # continue
+                else:
+                    frames_interval = total_frames // 8  # 等间距取8张
                 fps = video.get(cv.CAP_PROP_FPS)
                 half_interval = fps // 2  # 0.5s的帧
                 frames = []  # 用于保存帧的列表
                 frames_list = []  # 保存8张对应正帧的索引
+                # print(total_frames)
+                # print(frames_interval, total_frames, frames_interval)
                 for j in range(frames_interval, total_frames, frames_interval):
                     video.set(cv.CAP_PROP_POS_FRAMES, j)
                     # 记录8张索引的帧序列
@@ -103,11 +114,21 @@ def Cdistract(Test_path):
                         frames.append(Image.fromarray(cv.cvtColor(frame, cv.COLOR_BGR2RGB)))
                 video.release()
                 cv.destroyAllWindows()
-                image_dir.append(frames)
+                if len(frames) == 0:
+                    image_dir.append(1)
+                else:
+                    image_dir.append(frames)
+                image_dir_list.append(frames_list)
+                image_dir_half.append(half_interval)
             else:
                 image_dir.append(0)
+                image_dir_list.append(0)
+                image_dir_half.append(0)
         for i in range(len(image_dir)):
-            if image_dir[i] == 0:
+            # print(Test_path[i], '2')
+            frames_list = image_dir_list[i]
+            half_interval = image_dir_half[i]
+            if image_dir[i] in [0, 1]:
                 continue
             else:
                 t_flag = []
@@ -128,39 +149,44 @@ def Cdistract(Test_path):
                         flag=0
                     t_flag.append(flag)
                 second_flag = 0  # 标记是否相邻两张图片通过检测
-                for j in range(len(t_flag)):
-                    t_frame = []
-                    if t_flag[j] == 1:
-                        video = cv.VideoCapture(Test_path[i])
-                        if int(frames_list[j] - half_interval) > 0:
-                            video.set(cv.CAP_PROP_POS_FRAMES, int(frames_list[j] - half_interval))
-                            ret, frame = video.read()
-                            if ret:
-                                t_frame.append(Image.fromarray(cv.cvtColor(frame, cv.COLOR_BGR2RGB)))
-                        if int(frames_list[j] + half_interval) < total_frames:
-                            video.set(cv.CAP_PROP_POS_FRAMES, int(frames_list[j] + half_interval))
-                            ret, frame = video.read()
-                            if ret:
-                                t_frame.append(Image.fromarray(cv.cvtColor(frame, cv.COLOR_BGR2RGB)))
-                        ad_flag = [0, 0]
-                        video.release()
-                        cv.destroyAllWindows()
-                        for k in range(len(t_frame)):
-                            image_input = preprocess(t_frame[k]).unsqueeze(0).to(device)
-                            with torch.no_grad():
-                                image_features = model.encode_image(image_input)
-                            image_features /= image_features.norm(dim=-1, keepdim=True)
-                            text_features /= text_features.norm(dim=-1, keepdim=True)
-                            similarity = (100.0 * image_features @ text_features.T).softmax(dim=-1)
-                            a = similarity[0].tolist()
-                            re_a = sorted(a, reverse=True)
-                            index = a.index(max(a))
-                            index_2 = a.index(re_a[1])  # 认定Top2
-                            if (index in [0, 1]) or (index_2 in [0, 1]):
-                                ad_flag[k] = 1
-                        if ad_flag[0] == 1 or ad_flag[1] == 1:
-                            second_flag = 1
-                            break
+                # print(len(image_dir[i]))
+                # print(frames_list)
+                if len(image_dir[i]) in [1,2,3]:
+                    second_flag = 1
+                else:
+                    for j in range(len(t_flag)):
+                        t_frame = []
+                        if t_flag[j] == 1:
+                            video = cv.VideoCapture(Test_path[i])
+                            if int(frames_list[j] - half_interval) > 0:
+                                video.set(cv.CAP_PROP_POS_FRAMES, int(frames_list[j] - half_interval))
+                                ret, frame = video.read()
+                                if ret:
+                                    t_frame.append(Image.fromarray(cv.cvtColor(frame, cv.COLOR_BGR2RGB)))
+                            if int(frames_list[j] + half_interval) < total_frames:
+                                video.set(cv.CAP_PROP_POS_FRAMES, int(frames_list[j] + half_interval))
+                                ret, frame = video.read()
+                                if ret:
+                                    t_frame.append(Image.fromarray(cv.cvtColor(frame, cv.COLOR_BGR2RGB)))
+                            ad_flag = [0, 0]
+                            video.release()
+                            cv.destroyAllWindows()
+                            for k in range(len(t_frame)):
+                                image_input = preprocess(t_frame[k]).unsqueeze(0).to(device)
+                                with torch.no_grad():
+                                    image_features = model.encode_image(image_input)
+                                image_features /= image_features.norm(dim=-1, keepdim=True)
+                                text_features /= text_features.norm(dim=-1, keepdim=True)
+                                similarity = (100.0 * image_features @ text_features.T).softmax(dim=-1)
+                                a = similarity[0].tolist()
+                                re_a = sorted(a, reverse=True)
+                                index = a.index(max(a))
+                                index_2 = a.index(re_a[1])  # 认定Top2
+                                if (index in [0, 1]) or (index_2 in [0, 1]):
+                                    ad_flag[k] = 1
+                            if ad_flag[0] == 1 or ad_flag[1] == 1:
+                                second_flag = 1
+                                break
 
                 if second_flag == 1:
                     Flag[i] = 1

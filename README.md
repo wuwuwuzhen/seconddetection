@@ -3,12 +3,16 @@
 ## docker
 
 ```shell
-docker exec -it 69 /bin/zsh
-ps -ef | grep python
-cd data/code/hf_bus
+# 找到环境、运行线程、代码所在文件夹
+docker exec -it 69 /bin/zsh  # 进入docker环境
+ps -ef | grep python # 进入docker环境后，查看运行了哪些python进程
+cd data/code/hf_bus 
+
+# 杀掉正在运行的线程
 pkill -f python
 kill -9 $(pgrep gunicorn)
-## 单线程运行
+
+## 单线程运行 项目特殊性 workers和threads只能是1 
 nohup gunicorn --workers 1 --threads 1  --timeout 3600 --bind 0.0.0.0:5000 main:app --log-level debug --access-logfile - --error-logfile - &
 tail -f -n 100 logs/hf_bus.log
 ```

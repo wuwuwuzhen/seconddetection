@@ -231,7 +231,6 @@ def sample_selection(df):
             f"[sample_selection] second_det_distracted_2:{Second_det_distracted_2}")
         logging.debug(f"[sample_selection] merge_dis_distracted:{Merge_dis_distracted}")
         t2 = time.time()
-        # print(t2-t1)
     logging.debug(f'[sample_selection] succeeded in distracted detection')
 #
 # # #行人碰撞检测
@@ -507,7 +506,6 @@ def sample_selection(df):
             f"[sample_selection] merge_dis_lane_departure:{Merge_dis_lane_departure}")
         t2 = time.time()
     logging.debug(f'[sample_selection] succeeded in lane_departure detection')
-
     # 合并Others的重复项
     # print(len(Other_samples))
     t1 = time.time()
