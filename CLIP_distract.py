@@ -78,6 +78,8 @@ def Cdistract(Test_path):
                     cap = cv.VideoCapture(Test_path[i])
                     if not cap.isOpened():
                         image_dir.append(0)
+                        image_dir_list.append(0)
+                        image_dir_half.append(0)
                         continue
                     else:
                         while True:
@@ -88,6 +90,8 @@ def Cdistract(Test_path):
                         cap.release()
                 except Exception as e:
                     image_dir.append(0)
+                    image_dir_list.append(0)
+                    image_dir_half.append(0)
                     continue
                 #等距抽取8帧
                 video = cv.VideoCapture(Test_path[i])

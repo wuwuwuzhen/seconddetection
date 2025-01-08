@@ -158,6 +158,8 @@ def Behavior(Test_path):
                     cap = cv.VideoCapture(Test_path[i])
                     if not cap.isOpened():
                         image_dir.append(0)
+                        image_dir_list.append(0)
+                        image_dir_half.append(0)
                         continue
                     else:
                         while True:
@@ -168,6 +170,8 @@ def Behavior(Test_path):
                         cap.release()
                 except Exception as e:
                     image_dir.append(0)
+                    image_dir_list.append(0)
+                    image_dir_half.append(0)
                     continue
                 video = cv.VideoCapture(Test_path[i])
                 # print(Test_path[i], 1)
@@ -203,7 +207,7 @@ def Behavior(Test_path):
                 image_dir.append(0)
                 image_dir_list.append(0)
                 image_dir_half.append(0)
-
+            print(len(image_dir_list))
         for i in range(len(image_dir)):
             frames_list = image_dir_list[i]
             half_interval = image_dir_half[i]
@@ -301,6 +305,8 @@ def Behavior(Test_path):
                     cap = cv.VideoCapture(Test_path[i])
                     if not cap.isOpened():
                         image_dir.append(0)
+                        image_dir_list.append(0)
+                        image_dir_half.append(0)
                         continue
                     else:
                         while True:
@@ -311,6 +317,8 @@ def Behavior(Test_path):
                         cap.release()
                 except Exception as e:
                     image_dir.append(0)
+                    image_dir_list.append(0)
+                    image_dir_half.append(0)
                     continue
                 # 等距抽取8帧
                 video = cv.VideoCapture(Test_path[i])
